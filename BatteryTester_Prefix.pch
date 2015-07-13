@@ -1,0 +1,67 @@
+//
+// Prefix header for all source files of the 'BatteryTester' target in the 'BatteryTester' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
+
+#include <sys/param.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+#include <sysexits.h>
+#include <sys/select.h>
+#include <sys/time.h>
+#include <time.h>
+#include <termios.h>
+
+#include <CoreFoundation/CoreFoundation.h>
+
+#include <IOKit/IOKitLib.h>
+#include <IOKit/serial/IOSerialKeys.h>
+#include <IOKit/IOBSD.h>
+
+/************************ define constants ***********************************************/
+
+#define kAcknowledge 0
+#define kError 1
+#define kServiceNotSupported 2
+#define kOperationNotPossible 4
+#define kInappropriateActionRequested 5
+
+#define TABLE_COLUMNS 11
+#define TABLE_ROWS 17
+
+//	Communications system definitions
+
+//	Return error codes
+enum {
+	noCommError		= 0,		// no error
+	PortError		= -1,		// unrecoverable port error
+	CommError		= -2,		// error communicating with module
+	noSuchModule	= -3,		// module doesn't exist!
+	BadType			= -4,		// routine doesn't accept this module type
+	CommAbort		= -5		// user aborted operation
+};
+
+
+
+typedef struct
+{
+    char	portName[128];
+    char	bsdPath[ MAXPATHLEN ];
+} SerialPort;
+
+//main.m
+SerialPort*	GetPorts(void);
+void		FindAndListModems(void);
+int			SetAndOpenPort(int portNumber);
+int			ReadAndWrite(short inLength, short outLength, unsigned char *inBytes, unsigned char *outBytes, int portNumber);
+short		PortRead(short count, unsigned char *buffer,int portNumber);
+Boolean		PortWrite(short count, Byte *buff, int portNumber);
+void 		CloseSerialPort(int portNumber);
+
