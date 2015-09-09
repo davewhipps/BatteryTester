@@ -13,7 +13,7 @@
 #import "Graph.h"
 #import "OldStep.h"
 
-@interface MyDocument : NSDocument
+@interface MyDocument : NSDocument <NSTableViewDataSource>
 {
 	IBOutlet NSWindow *introSheet,*newSerialSheet, *serialNumberSheet, *timeSheet;
 	IBOutlet Graph *graph;
@@ -28,8 +28,7 @@
 	IBOutlet NSTextField *statusText1, *statusText2, *ampsField, *voltsField, *wattsField;
 	IBOutlet NSTextField *commandField, *responseField;
 	NSString *serialPortString;
-	NSOpenPanel *open;
-	
+    	
 	int currentStep, numberOfSteps;
 	NSDate *runTime, *stepRunTime;
 	float ampsSetpoint, voltsSetpoint, amps, volts, presentInterval;
@@ -55,8 +54,11 @@
 
 # pragma mark battery tester methods
 
-- (IBAction)openSequenceFile:(id)sender;
-- (void)openSequenceFilePanelDidEnd:(NSOpenPanel *)panel returnCode:(int)returnCode contextInfo:(void *)contextInfo;
+- (IBAction)importSequenceFile:(id)sender;
+- (IBAction)exportSequenceFile:(id)sender;
+
+- (void)sequenceWithContentsOfURL:(NSURL*)inURL;
+- (void)writeSequenceToURL:(NSURL*)outURL;
 
 - (IBAction)start:(id)sender;
 - (IBAction)stop:(id)sender;

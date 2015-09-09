@@ -60,4 +60,22 @@
 	return self;
 }
 
+-(NSString *)toCSVString
+{
+	NSArray* stepsStringArray = [NSArray arrayWithObjects:  stepID,
+                                                            command,
+                                                            argument,
+                                                            setpoint,
+                                                            stepDuration,
+                                                            endType,
+                                                            criterion,
+                                                            targetValue,
+                                                            readInterval,
+                                                            logInterval,
+                                                            flag,
+                                                            nil];
+                                                        
+    return [stepsStringArray componentsJoinedByString:@","];
+}
+
 @end
