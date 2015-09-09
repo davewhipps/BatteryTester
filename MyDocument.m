@@ -17,7 +17,7 @@
    
 	[super init];
 
-	steps = [[NSArray arrayWithObjects:[[OldStep alloc] initWithArray:theArray], nil] retain];
+	steps = [[NSMutableArray arrayWithObjects:[[OldStep alloc] initWithArray:theArray], nil] retain];
 	//tester = [[SingleCellHardware alloc] init];
 	//[tester setThingsUp];
     loopStep = -1;
@@ -380,7 +380,7 @@
 					current = latestAmps;
 					NSLog(@" current current = %f",current);
 					
-					watts:latestAmps*latestVolts/10000;
+					//watts:latestAmps*latestVolts/10000;
 					[ampsField setFloatValue:current];
 					[voltsField setFloatValue:voltage];
 					[wattsField setFloatValue:watts];
@@ -423,7 +423,7 @@
 		}
 	}
 	else
-		[statusText2 setStringValue:[NSString stringWithFormat:@"hmm, rcvd %d, %@",[receiver length], receiver]];
+		[statusText2 setStringValue:[NSString stringWithFormat:@"hmm, rcvd %ld, %@",(unsigned long)[receiver length], receiver]];
 	
 	if(running)
 	{
