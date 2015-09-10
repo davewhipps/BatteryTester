@@ -62,6 +62,9 @@
 
 - (IBAction)start:(id)sender;
 - (IBAction)stop:(id)sender;
+- (IBAction)nextStep:(id)sender;
+
+- (void)incrementStep;
 - (void)doNextStep;
 - (void)parseCurrentStep;
 

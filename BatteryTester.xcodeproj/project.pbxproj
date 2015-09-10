@@ -21,6 +21,11 @@
 		8D15AC310486D014006FF6A4 /* MyDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A37F4ACFDCFA73011CA2CEA /* MyDocument.m */; settings = {ATTRIBUTES = (); }; };
 		8D15AC320486D014006FF6A4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A37F4B0FDCFA73011CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D15AC340486D014006FF6A4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A7FEA54F5311CA2CBB /* Cocoa.framework */; };
+		B3D602EB1BA1087F00E578E5 /* glyphicons-174-play.png in Resources */ = {isa = PBXBuildFile; fileRef = B3D602E61BA1087F00E578E5 /* glyphicons-174-play.png */; };
+		B3D602EC1BA1087F00E578E5 /* glyphicons-176-stop.png in Resources */ = {isa = PBXBuildFile; fileRef = B3D602E71BA1087F00E578E5 /* glyphicons-176-stop.png */; };
+		B3D602ED1BA1087F00E578E5 /* glyphicons-179-step-forward.png in Resources */ = {isa = PBXBuildFile; fileRef = B3D602E81BA1087F00E578E5 /* glyphicons-179-step-forward.png */; };
+		B3D602EE1BA1087F00E578E5 /* glyphicons-359-file-import.png in Resources */ = {isa = PBXBuildFile; fileRef = B3D602E91BA1087F00E578E5 /* glyphicons-359-file-import.png */; };
+		B3D602EF1BA1087F00E578E5 /* glyphicons-360-file-export.png in Resources */ = {isa = PBXBuildFile; fileRef = B3D602EA1BA1087F00E578E5 /* glyphicons-360-file-export.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +55,11 @@
 		2A37F4C5FDCFA73011CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D15AC360486D014006FF6A4 /* BatteryTester-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "BatteryTester-Info.plist"; sourceTree = "<group>"; };
 		8D15AC370486D014006FF6A4 /* BatteryTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatteryTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B3D602E61BA1087F00E578E5 /* glyphicons-174-play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "glyphicons-174-play.png"; path = "images/glyphicons-174-play.png"; sourceTree = "<group>"; };
+		B3D602E71BA1087F00E578E5 /* glyphicons-176-stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "glyphicons-176-stop.png"; path = "images/glyphicons-176-stop.png"; sourceTree = "<group>"; };
+		B3D602E81BA1087F00E578E5 /* glyphicons-179-step-forward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "glyphicons-179-step-forward.png"; path = "images/glyphicons-179-step-forward.png"; sourceTree = "<group>"; };
+		B3D602E91BA1087F00E578E5 /* glyphicons-359-file-import.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "glyphicons-359-file-import.png"; path = "images/glyphicons-359-file-import.png"; sourceTree = "<group>"; };
+		B3D602EA1BA1087F00E578E5 /* glyphicons-360-file-export.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "glyphicons-360-file-export.png"; path = "images/glyphicons-360-file-export.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,6 +157,11 @@
 				8D15AC360486D014006FF6A4 /* BatteryTester-Info.plist */,
 				28B7537A1B46F015003722D3 /* BatteryTester.icns */,
 				089C165FFE840EACC02AAC07 /* InfoPlist.strings */,
+				B3D602E61BA1087F00E578E5 /* glyphicons-174-play.png */,
+				B3D602E71BA1087F00E578E5 /* glyphicons-176-stop.png */,
+				B3D602E81BA1087F00E578E5 /* glyphicons-179-step-forward.png */,
+				B3D602E91BA1087F00E578E5 /* glyphicons-359-file-import.png */,
+				B3D602EA1BA1087F00E578E5 /* glyphicons-360-file-export.png */,
 				1DDD58280DA1D0D100B32029 /* MyDocument.xib */,
 				1DDD582A0DA1D0D100B32029 /* MainMenu.xib */,
 			);
@@ -213,9 +228,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D15AC2C0486D014006FF6A4 /* Credits.rtf in Resources */,
+				B3D602EC1BA1087F00E578E5 /* glyphicons-176-stop.png in Resources */,
 				8D15AC2F0486D014006FF6A4 /* InfoPlist.strings in Resources */,
+				B3D602ED1BA1087F00E578E5 /* glyphicons-179-step-forward.png in Resources */,
+				B3D602EE1BA1087F00E578E5 /* glyphicons-359-file-import.png in Resources */,
 				1DDD582C0DA1D0D100B32029 /* MyDocument.xib in Resources */,
 				1DDD582D0DA1D0D100B32029 /* MainMenu.xib in Resources */,
+				B3D602EF1BA1087F00E578E5 /* glyphicons-360-file-export.png in Resources */,
+				B3D602EB1BA1087F00E578E5 /* glyphicons-174-play.png in Resources */,
 				28B7537B1B46F015003722D3 /* BatteryTester.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

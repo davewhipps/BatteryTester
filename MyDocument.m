@@ -91,9 +91,29 @@
 	[self nameAndStartSaveLogFile:self];
 }
 
+- (IBAction)nextStep:(id)sender
+{
+    // TODO: Skip to next step
+    
+    // Is it running?
+    // Is it looping?
+    
+    // If all is well, call:
+    [self incrementStep];
+}
+
+- (void)incrementStep
+{
+    [stepRunTime release];
+    stepRunTime = [[NSDate date] retain];
+    NSBeep();
+    ++currentStep;
+    [self doNextStep];
+}
+
 - (void)doNextStep
 {
-	if(currentStep > numberOfSteps)
+	if (currentStep > numberOfSteps)
         [self stop:self];
 	else
 		[self parseCurrentStep];
@@ -115,18 +135,14 @@
 	else
 		[statusText1 setStringValue:statusString];
 	
-	if([endTypeString isEqualToString:@"Time"])	//time ended step
+	if ([endTypeString isEqualToString:@"Time"])	//time ended step
 	{
-		if(stepElapsedTime > stepTime )
+		if (stepElapsedTime > stepTime )
 		{
-			[stepRunTime release];
-			stepRunTime = [[NSDate date] retain];
-			NSBeep();
-			++currentStep;
-			[self doNextStep];
+			[self incrementStep];
 		}
 	}
-	else if([endTypeString isEqualToString:@"Voltage"])
+	else if ([endTypeString isEqualToString:@"Voltage"])
 	{
 		NSString *criterionString = [[[steps objectAtIndex:currentStep] criterion] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 		NSString *targetValueString = [[[steps objectAtIndex:currentStep] targetValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -150,31 +166,19 @@
 		else
 			getOut = 1;
 		
-		if(getOut)
+		if (getOut)
 		{
-			[stepRunTime release];
-			stepRunTime = [[NSDate date] retain];
-			NSBeep();
-			++currentStep;
-			[self doNextStep];
+			[self incrementStep];
 		}
 		
 	}		
 	else if([endTypeString isEqualToString:@"loop"])
 	{
-		[stepRunTime release];
-		stepRunTime = [[NSDate date] retain];
-		NSBeep();
-		++currentStep;
-		[self doNextStep];
+        [self incrementStep];
 	}		
 	else 
 	{
-		[stepRunTime release];
-		stepRunTime = [[NSDate date] retain];
-		NSBeep();
-		++currentStep;
-		[self doNextStep];
+        [self incrementStep];
 	}		
 }
 
