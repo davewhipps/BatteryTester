@@ -965,10 +965,11 @@
 
 	if([newSerialMenu numberOfItems])	// we found some ports
 	{
-		[menuDescription setStringValue:@"Choose a serial port:"];
+		[serialPortErrorDescription setHidden:true];
+
 		[newSerialMenu setHidden: false];
+        [serialPortMenuLabel setHidden:false];
 		[okButton setHidden:false];
-		[menuDescription setHidden:false];
 
 		[theTimer invalidate];	// if we've found a port, don't run this routine again. One port is enough for now!
 		[theTimer release];
@@ -983,10 +984,12 @@
 		[attr setObject: [NSColor yellowColor] forKey:NSForegroundColorAttributeName];
 		[attr setObject: [NSColor redColor] forKey:NSBackgroundColorAttributeName];
 		
-		[menuDescription setAttributedStringValue:[[NSAttributedString alloc] initWithString: @"USB-Serial converter has been unplugged! Please plug it back into computer!" attributes:attr]];
+		[serialPortErrorDescription setAttributedStringValue:[[NSAttributedString alloc] initWithString: @"USB-Serial converter has been unplugged! Please plug it back into computer!" attributes:attr]];
 		[newSerialMenu setHidden: true];
+        [serialPortMenuLabel setHidden:true];
+
 		[okButton setHidden:true];
-		[menuDescription setHidden:false];
+		[serialPortErrorDescription setHidden:false];
 	}
 }	
 - (void)dealloc 

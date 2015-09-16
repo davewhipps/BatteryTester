@@ -19,11 +19,13 @@
 	IBOutlet Graph *graph;
 	IBOutlet NSPopUpButton *newSerialMenu;
 	IBOutlet NSButton *startButton, *loadButton, *okButton, *cancelButton;
-	IBOutlet NSTextField *menuDescription;
+	IBOutlet NSTextField *serialPortMenuLabel;
+	IBOutlet NSTextField *serialPortErrorDescription;
 	
 	//battery tester
     NSTimer *theTimer;
 	NSMutableArray *steps;
+    
 	IBOutlet NSTableView *theTable;
 	IBOutlet NSTextField *statusText1, *statusText2, *ampsField, *voltsField, *wattsField;
 	IBOutlet NSTextField *commandField, *responseField;
