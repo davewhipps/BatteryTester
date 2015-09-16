@@ -533,16 +533,13 @@
 
 - (IBAction)exportSequenceFile:(id)sender
 {
-	NSArray* windows = [self windowControllers];
-	NSWindowController* winC = [windows objectAtIndex:0];
-	NSWindow* theWin = [winC window];
-	
 	NSSavePanel* savePanel = [NSSavePanel savePanel];
     
     // TODO: Set default filename
     // TODO: Set default directory
     
-    [savePanel  beginSheetModalForWindow:(NSWindow *)theWin
+    NSWindow* appWindow = [[NSApplication sharedApplication] mainWindow];
+    [savePanel  beginSheetModalForWindow:(NSWindow *)appWindow
                        completionHandler:^(NSInteger result)
         {
             if (result == NSFileHandlingPanelOKButton)
@@ -557,16 +554,13 @@
 
 - (IBAction)importSequenceFile:(id)sender
 {
-	NSArray* windows = [self windowControllers];
-	NSWindowController* winC = [windows objectAtIndex:0];
-	NSWindow* theWin = [winC window];
-	
 	NSOpenPanel* openPanel = [NSOpenPanel openPanel];
     
     // TODO: Set default filename
     // TODO: Set default directory
-    
-    [openPanel  beginSheetModalForWindow:(NSWindow *)theWin
+
+    NSWindow* appWindow = [[NSApplication sharedApplication] mainWindow];
+    [openPanel  beginSheetModalForWindow:(NSWindow *)appWindow
                        completionHandler:^(NSInteger result)
         {
             if (result == NSFileHandlingPanelOKButton)
@@ -682,50 +676,61 @@
 
 - (IBAction)nameAndStartSaveLogFile:(id)sender
 {
-    NSFileManager *fm = [NSFileManager defaultManager];     // get the default file manager
-    NSString *defaultDirectoryPath = @"~/Desktop";
-    NSString  *defaultName = @"Log File";
     NSSavePanel *savePanel = [NSSavePanel savePanel];
-    NSString *headerString;
-    NSData *data;
-    BOOL success = false;
+    
+    // Default to documents directory (If you really want the desktop, use this: NSDesktopDirectory instead)
+    NSArray* userDocumentsFolders = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+	NSString* defaultDirectory = [userDocumentsFolders objectAtIndex:0];
+    NSURL* defaultDirectoryURL = [NSURL fileURLWithPath:defaultDirectory isDirectory:YES];
+    [savePanel setDirectoryURL:defaultDirectoryURL];
+    
+    // Default filename
     NSCalendarDate *now = [NSCalendarDate calendarDate];
-    NSString *datestr;
+    NSString* datestr = [now descriptionWithCalendarFormat:@"%m%d%y %I%M%S%p"];
+    [savePanel setNameFieldStringValue:[NSString stringWithFormat:@"Log File %@.log",datestr]];
     
-    datestr = [now descriptionWithCalendarFormat:@"%m%d%y %I%M%S%p"];
-    headerString = [NSString stringWithFormat:@"time\telapsed Time\tvolts\tamps"];
-    data = [headerString dataUsingEncoding:NSUTF8StringEncoding];        // put it into ascii format
-    defaultDirectoryPath = [defaultDirectoryPath stringByExpandingTildeInPath];
-    defaultName = [NSString stringWithFormat:@"Log File %@",datestr];
+    // Ensure .txt format
+	[savePanel setAllowedFileTypes:[NSArray arrayWithObject:(NSString*) kUTTypeUTF8PlainText]];
     
-    if( [savePanel runModalForDirectory:defaultDirectoryPath file:defaultName] == NSFileHandlingPanelOKButton )
-    {
-        NSString *fullFileName = [NSString stringWithFormat:@"%@.txt",[[savePanel URL] path]];
-//        NSLog(fullFileName);
-        
-        success = [fm createFileAtPath: fullFileName contents: data attributes: nil];
-        if(success)  // we were successful? Then party on!
+    // App main window
+    NSWindow* appWindow = [[NSApplication sharedApplication] mainWindow];
+    
+    // Show the save panel in a sheet
+    [savePanel beginSheetModalForWindow:appWindow completionHandler:^(NSInteger result)
         {
-            fyle = [NSFileHandle fileHandleForWritingAtPath:fullFileName];      // get the handle to the newly created file
-            [fyle retain];
-            
-            if(runTime) // we had a previous file created
-                [runTime release];
-            runTime = [[NSDate date] retain];
-            stepRunTime = [[NSDate date] retain];
-            running = 1;
-            [statusText1 setStringValue:@"Run Started"];
-            
-            currentStep = 0;
-            loopStep = -1;
-            loopRepeats = -1;
-            loopDoneJumpToStep = -1;
-            [self doNextStep];
+            if (result == NSFileHandlingPanelOKButton)
+            {
+                NSString* headerString = [NSString stringWithFormat:@"time\telapsed Time\tvolts\tamps"];
+                NSData* data = [headerString dataUsingEncoding:NSUTF8StringEncoding];
+                
+                NSFileManager* fm = [NSFileManager defaultManager];
+                BOOL success = [fm createFileAtPath: [[savePanel URL] path] contents: data attributes: nil];
+                
+                if (success)  // we were successful? Then party on!
+                {
+                    NSError* theError = nil;
+                    fyle = [NSFileHandle fileHandleForWritingToURL:[savePanel URL] error:&theError];      // get the handle to the newly created file
+                    [fyle retain];
+                    
+                    if (runTime) // we had a previous file created
+                        [runTime release];
+                    
+                    runTime = [[NSDate date] retain];
+                    stepRunTime = [[NSDate date] retain];
+                    running = 1;
+                    [statusText1 setStringValue:@"Run Started"];
+                    
+                    currentStep = 0;
+                    loopStep = -1;
+                    loopRepeats = -1;
+                    loopDoneJumpToStep = -1;
+                    [self doNextStep];
+                }
+            }
         }
-    }
-    else
-        NSLog(@" Cancel!");
+    ];
 }
+
 -(NSString *)readSmallTesterBinary
 {
 	unsigned char binSend[] = {'b','\r'};
@@ -978,7 +983,7 @@
 		[attr setObject: [NSColor yellowColor] forKey:NSForegroundColorAttributeName];
 		[attr setObject: [NSColor redColor] forKey:NSBackgroundColorAttributeName];
 		
-		[menuDescription setStringValue:[[NSAttributedString alloc] initWithString: @"USB-Serial converter has been unplugged! Please plug it back into computer!" attributes:attr]];
+		[menuDescription setAttributedStringValue:[[NSAttributedString alloc] initWithString: @"USB-Serial converter has been unplugged! Please plug it back into computer!" attributes:attr]];
 		[newSerialMenu setHidden: true];
 		[okButton setHidden:true];
 		[menuDescription setHidden:false];
