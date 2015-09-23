@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="8.00">
 	<data>
-		<int key="IBDocument.SystemTarget">101000</int>
+		<int key="IBDocument.SystemTarget">1060</int>
 		<string key="IBDocument.SystemVersion">14F27</string>
 		<string key="IBDocument.InterfaceBuilderVersion">6751</string>
 		<string key="IBDocument.AppKitVersion">1348.17</string>
@@ -262,11 +262,12 @@
 							</set>
 							<string key="NSFrame">{{-14, -10}, {808, 411}}</string>
 							<reference key="NSSuperview" ref="568628114"/>
+							<reference key="NSNextKeyView" ref="876420607"/>
 							<array class="NSMutableArray" key="NSTabViewItems">
 								<object class="NSTabViewItem" id="825638663">
 									<string key="NSIdentifier">1</string>
 									<object class="NSView" key="NSView" id="116350788">
-										<reference key="NSNextResponder" ref="4296174"/>
+										<nil key="NSNextResponder"/>
 										<int key="NSvFlags">274</int>
 										<array class="NSMutableArray" key="NSSubviews">
 											<object class="NSCustomView" id="154182114">
@@ -723,7 +724,6 @@
 											</object>
 										</array>
 										<string key="NSFrame">{{10, 33}, {788, 365}}</string>
-										<reference key="NSSuperview" ref="4296174"/>
 										<reference key="NSNextKeyView" ref="827385407"/>
 									</object>
 									<string key="NSLabel">Graph</string>
@@ -733,7 +733,7 @@
 								<object class="NSTabViewItem" id="649670153">
 									<string key="NSIdentifier">2</string>
 									<object class="NSView" key="NSView" id="876420607">
-										<nil key="NSNextResponder"/>
+										<reference key="NSNextResponder" ref="4296174"/>
 										<int key="NSvFlags">274</int>
 										<array class="NSMutableArray" key="NSSubviews">
 											<object class="NSView" id="391216592">
@@ -753,7 +753,7 @@
 																		<int key="NSvFlags">256</int>
 																		<string key="NSFrameSize">{763, 340}</string>
 																		<reference key="NSSuperview" ref="226135838"/>
-																		<reference key="NSNextKeyView" ref="158958366"/>
+																		<reference key="NSNextKeyView" ref="735702889"/>
 																		<bool key="NSEnabled">YES</bool>
 																		<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 																		<bool key="NSControlAllowsExpansionToolTips">YES</bool>
@@ -1140,6 +1140,7 @@
 																<int key="NSvFlags">-2147483392</int>
 																<string key="NSFrame">{{1, 477}, {841, 15}}</string>
 																<reference key="NSSuperview" ref="1006489406"/>
+																<reference key="NSNextKeyView" ref="668520471"/>
 																<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 																<string key="NSControlAction">_doScroller:</string>
 																<reference key="NSControlTarget" ref="1006489406"/>
@@ -1165,7 +1166,7 @@
 														</array>
 														<string key="NSFrameSize">{765, 358}</string>
 														<reference key="NSSuperview" ref="391216592"/>
-														<reference key="NSNextKeyView" ref="226135838"/>
+														<reference key="NSNextKeyView" ref="158958366"/>
 														<int key="NSsFlags">133682</int>
 														<reference key="NSVScroller" ref="735702889"/>
 														<reference key="NSHScroller" ref="450843002"/>
@@ -1183,6 +1184,7 @@
 											</object>
 										</array>
 										<string key="NSFrame">{{10, 33}, {788, 365}}</string>
+										<reference key="NSSuperview" ref="4296174"/>
 										<reference key="NSNextKeyView" ref="391216592"/>
 									</object>
 									<string key="NSLabel">Sequence</string>
@@ -1190,13 +1192,13 @@
 									<reference key="NSTabView" ref="4296174"/>
 								</object>
 							</array>
-							<reference key="NSSelectedTabViewItem" ref="825638663"/>
+							<reference key="NSSelectedTabViewItem" ref="649670153"/>
 							<reference key="NSFont" ref="384649400"/>
 							<int key="NSTvFlags">0</int>
 							<bool key="NSAllowTruncatedLabels">YES</bool>
 							<bool key="NSDrawsBackground">YES</bool>
 							<array class="NSMutableArray" key="NSSubviews">
-								<reference ref="116350788"/>
+								<reference ref="876420607"/>
 							</array>
 						</object>
 						<object class="NSTextField" id="88908913">
@@ -1677,14 +1679,6 @@
 						<reference key="destination" ref="1066605685"/>
 					</object>
 					<int key="connectionID">100159</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">dataSource</string>
-						<reference key="source" ref="38861294"/>
-						<reference key="destination" ref="512844837"/>
-					</object>
-					<int key="connectionID">100130</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -2540,7 +2534,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">100193</int>
+			<int key="maxID">100197</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes"/>
 		<int key="IBDocument.localizationMode">0</int>

@@ -21,6 +21,7 @@
 		8D15AC310486D014006FF6A4 /* BatteryTesterDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A37F4ACFDCFA73011CA2CEA /* BatteryTesterDocument.m */; settings = {ATTRIBUTES = (); }; };
 		8D15AC320486D014006FF6A4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A37F4B0FDCFA73011CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D15AC340486D014006FF6A4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A7FEA54F5311CA2CBB /* Cocoa.framework */; };
+		B37E4AA01BB22E4400A27CBF /* BatteryTesterSequence.m in Sources */ = {isa = PBXBuildFile; fileRef = B37E4A9F1BB22E4400A27CBF /* BatteryTesterSequence.m */; };
 		B3D602EB1BA1087F00E578E5 /* glyphicons-174-play.png in Resources */ = {isa = PBXBuildFile; fileRef = B3D602E61BA1087F00E578E5 /* glyphicons-174-play.png */; };
 		B3D602EC1BA1087F00E578E5 /* glyphicons-176-stop.png in Resources */ = {isa = PBXBuildFile; fileRef = B3D602E71BA1087F00E578E5 /* glyphicons-176-stop.png */; };
 		B3D602ED1BA1087F00E578E5 /* glyphicons-179-step-forward.png in Resources */ = {isa = PBXBuildFile; fileRef = B3D602E81BA1087F00E578E5 /* glyphicons-179-step-forward.png */; };
@@ -55,6 +56,8 @@
 		2A37F4C5FDCFA73011CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D15AC360486D014006FF6A4 /* BatteryTester-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "BatteryTester-Info.plist"; sourceTree = "<group>"; };
 		8D15AC370486D014006FF6A4 /* BatteryTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatteryTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B37E4A9E1BB22E4400A27CBF /* BatteryTesterSequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BatteryTesterSequence.h; sourceTree = "<group>"; };
+		B37E4A9F1BB22E4400A27CBF /* BatteryTesterSequence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BatteryTesterSequence.m; sourceTree = "<group>"; };
 		B3D602E61BA1087F00E578E5 /* glyphicons-174-play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "glyphicons-174-play.png"; path = "images/glyphicons-174-play.png"; sourceTree = "<group>"; };
 		B3D602E71BA1087F00E578E5 /* glyphicons-176-stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "glyphicons-176-stop.png"; path = "images/glyphicons-176-stop.png"; sourceTree = "<group>"; };
 		B3D602E81BA1087F00E578E5 /* glyphicons-179-step-forward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "glyphicons-179-step-forward.png"; path = "images/glyphicons-179-step-forward.png"; sourceTree = "<group>"; };
@@ -132,6 +135,8 @@
 			children = (
 				2A37F4AEFDCFA73011CA2CEA /* BatteryTesterDocument.h */,
 				2A37F4ACFDCFA73011CA2CEA /* BatteryTesterDocument.m */,
+				B37E4A9E1BB22E4400A27CBF /* BatteryTesterSequence.h */,
+				B37E4A9F1BB22E4400A27CBF /* BatteryTesterSequence.m */,
 				28F506DE1B47628D00124EA2 /* CocoaSerialPort.h */,
 				28F506DF1B47628D00124EA2 /* CocoaSerialPort.m */,
 				28F506E01B47628D00124EA2 /* OldStep.h */,
@@ -252,6 +257,7 @@
 				28F506DB1B47622E00124EA2 /* Graph.m in Sources */,
 				28F506DC1B47622E00124EA2 /* NSImage_SMExtensions.m in Sources */,
 				28F506DD1B47622E00124EA2 /* SM2DGraphView.m in Sources */,
+				B37E4AA01BB22E4400A27CBF /* BatteryTesterSequence.m in Sources */,
 				28F506E21B47628D00124EA2 /* CocoaSerialPort.m in Sources */,
 				28F506E31B47628D00124EA2 /* OldStep.m in Sources */,
 			);

@@ -12,12 +12,10 @@
 
 - (id)init
 {
-    NSString *realString = @"StepID,Cmd,Arg,SP,Duration,EndType,Criterion,TargetVal,DaqIntrv,LogIntrv,Flag";
-	NSArray *theArray = [realString componentsSeparatedByString:@","];
-   
 	[super init];
+    
+    sequence = [[BatteryTesterSequence alloc] init];
 
-	steps = [[NSMutableArray arrayWithObjects:[[OldStep alloc] initWithArray:theArray], nil] retain];
 	//tester = [[SingleCellHardware alloc] init];
 	//[tester setThingsUp];
     loopStep = -1;
@@ -36,6 +34,10 @@
 - (void)windowControllerDidLoadNib:(NSWindowController *) aController
 {
 	[super windowControllerDidLoadNib:aController];
+    
+    // TODO: How do we hook this up via Interface Builder?
+    if (theTable)
+        [theTable setDataSource:sequence];
 
 	csp = [[CocoaSerialPort alloc] init];
 	
@@ -113,7 +115,7 @@
 
 - (void)doNextStep
 {
-	if (currentStep > numberOfSteps)
+	if (currentStep > [sequence numberOfSteps])
         [self stop:self];
 	else
 		[self parseCurrentStep];
@@ -122,9 +124,14 @@
 - (void)doPresentStep
 {
 	double stepElapsedTime = -[stepRunTime timeIntervalSinceNow];
-	double stepTime = [[[steps objectAtIndex:currentStep] stepDuration] doubleValue];
-	NSString *endTypeString = [[[steps objectAtIndex:currentStep] endType] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-	NSString *statusString = [NSString stringWithFormat:@"Executing step %d, %2.1f s of %2.1f", [[[steps objectAtIndex:currentStep] stepID] intValue ], stepElapsedTime, stepTime];
+
+    NSString* stepDuration = [sequence stringForAttribute:@"stepDuration" atIndex:currentStep];
+	double stepTime = [stepDuration doubleValue];
+	
+    NSString *endTypeString = [sequence stringForAttribute:@"endType" atIndex:currentStep];
+    
+    NSString* stepID = [sequence stringForAttribute:@"stepID" atIndex:currentStep];
+    NSString *statusString = [NSString stringWithFormat:@"Executing step %d, %2.1f s of %2.1f", [stepID intValue], stepElapsedTime, stepTime];
 	
 	NSIndexSet *theIndex = [NSIndexSet indexSetWithIndex:currentStep];
 	
@@ -144,9 +151,10 @@
 	}
 	else if ([endTypeString isEqualToString:@"Voltage"])
 	{
-		NSString *criterionString = [[[steps objectAtIndex:currentStep] criterion] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-		NSString *targetValueString = [[[steps objectAtIndex:currentStep] targetValue] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-		float target = [targetValueString floatValue];
+		NSString *criterionString = [sequence stringForAttribute:@"criterion" atIndex:currentStep];
+        NSString *targetValueString = [sequence stringForAttribute:@"targetValue" atIndex:currentStep];
+        
+        float target = [targetValueString floatValue];
 		int getOut = 0;
 		
 		if([criterionString isEqualToString:@"LTE"])
@@ -184,11 +192,12 @@
 
 - (void)parseCurrentStep
 {
-	NSString *commandString = [[[steps objectAtIndex:currentStep] command] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-	NSString *argumentString = [[[steps objectAtIndex:currentStep] argument] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-	//	NSString *endTypeString = [[[steps objectAtIndex:currentStep] endType] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-	NSString *setpointString = [[[steps objectAtIndex:currentStep] setpoint] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-	NSString *logIntervalString = [[[steps objectAtIndex:currentStep] logInterval] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+	NSString *commandString = [sequence stringForAttribute:@"command" atIndex:currentStep];
+    NSString *argumentString = [sequence stringForAttribute:@"argument" atIndex:currentStep];
+    
+    NSString *setpointString = [sequence stringForAttribute:@"setpoint" atIndex:currentStep];
+    NSString *logIntervalString = [sequence stringForAttribute:@"logInterval" atIndex:currentStep];
+    
     double maybeAmps;
 	unsigned char theReceive[100];
 	int receiveLength;
@@ -297,9 +306,10 @@
 			loopDoneJumpToStep = currentStep + 1;
 			//NSLog(@"loopStep = %d, loopRepeats = %d, loopDoneJumpToStep = %d",loopStep, loopRepeats, loopDoneJumpToStep);
 			
-			for (foo = 0; foo < numberOfSteps; ++ foo)
+			for (foo = 0; foo < [sequence numberOfSteps]; ++ foo)
 			{
-				if([[[steps objectAtIndex:foo] stepID] intValue ] == loopStep)
+                NSString* stepID = [sequence stringForAttribute:@"stepID" atIndex:foo];
+				if (stepID && ([stepID intValue] == loopStep))
 				{	
 					//NSLog (@" we have a  winner at step %d", foo);
 					loopStep = foo;
@@ -328,10 +338,10 @@
 	ampsSetpoint = 0;
 	[statusText2 setStringValue:@"open circuit"];
 	
-    if(fyle)
+    if(logFile)
     {
-        [fyle closeFile];
-        fyle = 0;
+        [logFile closeFile];
+        logFile = 0;
     }
 	[statusText1 setStringValue:@"Run Stopped"];
     running = 0;
@@ -448,88 +458,6 @@
 	//	NSLog(@"end draw graph");
 }
 				
-- (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
-{
-	return (NSInteger)[steps count];
-}
-
-- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
-{
-	NSString *isHeader = [[aTableColumn headerCell] stringValue];
-	
-	if([isHeader isEqualToString:@"Step"])
-		return [[steps objectAtIndex:rowIndex] stepID];
-	
-	if([isHeader isEqualToString:@"Command"])
-		return [[steps objectAtIndex:rowIndex] command];
-	
-	if([isHeader isEqualToString:@"Argument"])
-		return [[steps objectAtIndex:rowIndex] argument];
-	
-	if([isHeader isEqualToString:@"Setpoint"])
-		return [[steps objectAtIndex:rowIndex] setpoint];
-	
-	if([isHeader isEqualToString:@"Duration"])
-		return [[steps objectAtIndex:rowIndex] stepDuration];
-	
-	if([isHeader isEqualToString:@"End Type"])
-		return [[steps objectAtIndex:rowIndex] endType];
-	
-	if([isHeader isEqualToString:@"Criterion"])
-		return [[steps objectAtIndex:rowIndex] criterion];
-	
-	if([isHeader isEqualToString:@"Target Value"])
-		return [[steps objectAtIndex:rowIndex] targetValue];
-	
-	if([isHeader isEqualToString:@"Acquire interv"])
-		return [[steps objectAtIndex:rowIndex] readInterval];
-	
-	if([isHeader isEqualToString:@"Log interv"])
-		return [[steps objectAtIndex:rowIndex] logInterval];
-	
-	if([isHeader isEqualToString:@"Flag"])
-		return [[steps objectAtIndex:rowIndex] flag];
-    
-    return nil;
-}
-
-- (void)tableView:(NSTableView *)aTableView setObjectValue:(id)anObject forTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
-{
-	NSString *isHeader = [[aTableColumn headerCell] stringValue];
-	
-	if ([isHeader isEqualToString:@"Step"])
-        [[steps objectAtIndex:rowIndex] setStepID: anObject];
-	
-	if ([isHeader isEqualToString:@"Command"])
-		[[steps objectAtIndex:rowIndex] setCommand: anObject];
-	
-	if ([isHeader isEqualToString:@"Argument"])
-		[[steps objectAtIndex:rowIndex] setArgument: anObject];
-	
-	if ([isHeader isEqualToString:@"Setpoint"])
-		[[steps objectAtIndex:rowIndex] setSetpoint: anObject];
-	
-	if ([isHeader isEqualToString:@"Duration"])
-		[[steps objectAtIndex:rowIndex] setStepDuration: anObject];
-	
-	if ([isHeader isEqualToString:@"End Type"])
-		[[steps objectAtIndex:rowIndex] setEndType: anObject];
-	
-	if ([isHeader isEqualToString:@"Criterion"])
-		[[steps objectAtIndex:rowIndex] setCriterion: anObject];
-	
-	if ([isHeader isEqualToString:@"Target Value"])
-		[[steps objectAtIndex:rowIndex] setTargetValue: anObject];
-	
-	if ([isHeader isEqualToString:@"Acquire interv"])
-		[[steps objectAtIndex:rowIndex] setReadInterval: anObject];
-	
-	if ([isHeader isEqualToString:@"Log interv"])
-		[[steps objectAtIndex:rowIndex] setLogInterval: anObject];
-	
-	if ([isHeader isEqualToString:@"Flag"])
-		[[steps objectAtIndex:rowIndex] setFlag: anObject];
-}
 
 - (IBAction)exportSequenceFile:(id)sender
 {
@@ -546,7 +474,9 @@
             {
                 // Write to the file at the saved URL
                 NSURL* theSequenceFile = [savePanel URL];
-                [self writeSequenceToURL:theSequenceFile];
+                if (sequence) {
+                    [sequence writeToURL:theSequenceFile];
+                }
             }
         }
     ];
@@ -566,83 +496,17 @@
             if (result == NSFileHandlingPanelOKButton)
             {
                 NSURL* theSequenceFile = [[openPanel URLs] objectAtIndex:0];
-                [self sequenceWithContentsOfURL:theSequenceFile];
+                [sequence initWithContentsOfURL:theSequenceFile];
+                [theTable reloadData];
+                [theTable selectRowIndexes:0 byExtendingSelection:FALSE];
+                
+                loopStep = -1;
+                loopRepeats = -1;
+                loopDoneJumpToStep = -1;
             }
         }
     ];
 	
-}
-
-- (void)writeSequenceToURL:(NSURL*)outURL
-{
-    NSMutableArray* stepsStringArray = [NSMutableArray arrayWithCapacity:[steps count]];
-    
-    [steps enumerateObjectsUsingBlock:^(id object, NSUInteger idx, BOOL *stop) {
-        [stepsStringArray addObject:[(OldStep*)object toCSVString]];
-    }];
-    
-    NSString* csvString = [stepsStringArray componentsJoinedByString:@"\n"];
-    
-    NSError* whatError = nil;
-    [csvString writeToURL:outURL atomically:YES encoding:NSUTF8StringEncoding error:&whatError];
-}
-
-- (void)sequenceWithContentsOfURL:(NSURL*)inURL;
-{
-    int i, foo, isInit = 0;
-
-    NSError* whatError = nil;
-    NSString *theString = [[NSString stringWithContentsOfURL:inURL encoding:NSUTF8StringEncoding error:&whatError] stringByReplacingOccurrencesOfString:@"," withString:@", "];
-    
-    NSArray *lineArray = [theString componentsSeparatedByString:@"\r\n"];
-    OldStep *stepWise;
-    //NSString *lineString = [NSString stringWithString: [lineArray objectAtIndex:2]];
-    
-    NSArray *theArray;
-    NSMutableArray *newArray, *oldArray;
-    
-    //NSLog(@"lineString = %@",lineString);
-    
-    //NSLog(@"%d objects in LineArray",[lineArray count]);
-    
-    foo = [lineArray count];
-    
-    numberOfSteps = foo - 3;
-    
-    for(i = 2; i < foo; ++i)
-    {
-        theArray = [[lineArray objectAtIndex:i]  componentsSeparatedByString:@","];
-        if([theArray count] == 11)
-        {
-            stepWise = [[OldStep alloc] initWithArray:theArray];
-            
-            
-            if(isInit)
-                [newArray addObject:stepWise];
-            else
-            {
-                newArray = [NSMutableArray arrayWithObject:stepWise];
-                isInit = 1;
-            }
-            
-            //NSLog(@"oops on line %d",i);
-        }
-        //else 
-        //	NSLog(@"oops on line %d, %d objects",i, [theArray count]);
-    }
-    /* */
-    oldArray = steps;
-    steps = newArray;
-    [newArray retain];
-    [oldArray release];
-    
-    [theTable reloadData];
-    
-    [theTable selectRowIndexes:0 byExtendingSelection:FALSE];
-    
-    loopStep = -1;
-    loopRepeats = -1;
-    loopDoneJumpToStep = -1;
 }
 
 - (void)writeLatestDataToDisk
@@ -660,16 +524,16 @@
     NSData *data;
     
 	
-    offset = [fyle seekToEndOfFile];    // set the write position to the end of the file (the variable offset doesn't actually do anything, it's just a receiver)
+    offset = [logFile seekToEndOfFile];    // set the write position to the end of the file (the variable offset doesn't actually do anything, it's just a receiver)
 	
     string = [NSString stringWithFormat:@"\n"];     // put in a newline
     data = [string dataUsingEncoding:NSMacOSRomanStringEncoding];    // put it into ascii format
-    [fyle writeData: data];             // write the data
-    offset = [fyle seekToEndOfFile];    // set the write position to the end of the file
+    [logFile writeData: data];             // write the data
+    offset = [logFile seekToEndOfFile];    // set the write position to the end of the file
 	
     data = [writeString dataUsingEncoding:NSMacOSRomanStringEncoding];
-    [fyle writeData: data]; 
-    offset = [fyle seekToEndOfFile];
+    [logFile writeData: data]; 
+    offset = [logFile seekToEndOfFile];
 	
 	//	NSLog(@"wrote");
 }
@@ -709,8 +573,8 @@
                 if (success)  // we were successful? Then party on!
                 {
                     NSError* theError = nil;
-                    fyle = [NSFileHandle fileHandleForWritingToURL:[savePanel URL] error:&theError];      // get the handle to the newly created file
-                    [fyle retain];
+                    logFile = [NSFileHandle fileHandleForWritingToURL:[savePanel URL] error:&theError];      // get the handle to the newly created file
+                    [logFile retain];
                     
                     if (runTime) // we had a previous file created
                         [runTime release];
@@ -1005,10 +869,10 @@
 - (void)close
 {
 	NSLog(@"close called");
-	if(fyle)
+	if(logFile)
 	{
-		[fyle closeFile];
-		[fyle release];
+		[logFile closeFile];
+		[logFile release];
 	}
 	if(theTimer)
 	{

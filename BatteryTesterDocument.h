@@ -11,9 +11,9 @@
 #import <Cocoa/Cocoa.h>
 #import "CocoaSerialPort.h"
 #import "Graph.h"
-#import "OldStep.h"
+#import "BatteryTesterSequence.h"
 
-@interface BatteryTesterDocument : NSDocument <NSTableViewDataSource>
+@interface BatteryTesterDocument : NSDocument
 {
 	IBOutlet NSWindow *introSheet,*newSerialSheet, *serialNumberSheet, *timeSheet;
 	IBOutlet Graph *graph;
@@ -24,14 +24,15 @@
 	
 	//battery tester
     NSTimer *theTimer;
-	NSMutableArray *steps;
     
-	IBOutlet NSTableView *theTable;
+    IBOutlet BatteryTesterSequence <NSTableViewDataSource> *sequence;
+	
+    IBOutlet NSTableView *theTable;
 	IBOutlet NSTextField *statusText1, *statusText2, *ampsField, *voltsField, *wattsField;
 	IBOutlet NSTextField *commandField, *responseField;
 	NSString *serialPortString;
     	
-	int currentStep, numberOfSteps;
+	NSInteger currentStep, numberOfSteps;
 	NSDate *runTime, *stepRunTime;
 	float ampsSetpoint, voltsSetpoint, amps, volts, presentInterval;
 	int lessEqualGreater;
@@ -47,10 +48,10 @@
 	int		testerPort;
 	SerialPort		*portList;
 	CocoaSerialPort *csp;
-	NSFileHandle		*fyle;
 	unsigned char receivePacket[100];
 	NSDate *startTime;
-	}
+    NSFileHandle *logFile;
+}
 
 - (void)awakeFromNib;
 
@@ -58,9 +59,6 @@
 
 - (IBAction)importSequenceFile:(id)sender;
 - (IBAction)exportSequenceFile:(id)sender;
-
-- (void)sequenceWithContentsOfURL:(NSURL*)inURL;
-- (void)writeSequenceToURL:(NSURL*)outURL;
 
 - (IBAction)start:(id)sender;
 - (IBAction)stop:(id)sender;
