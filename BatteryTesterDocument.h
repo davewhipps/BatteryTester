@@ -13,7 +13,7 @@
 #import "Graph.h"
 #import "OldStep.h"
 
-@interface MyDocument : NSDocument <NSTableViewDataSource>
+@interface BatteryTesterDocument : NSDocument <NSTableViewDataSource>
 {
 	IBOutlet NSWindow *introSheet,*newSerialSheet, *serialNumberSheet, *timeSheet;
 	IBOutlet Graph *graph;

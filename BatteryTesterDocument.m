@@ -6,9 +6,9 @@
 //  Copyright 2015 __MyCompanyName__. All rights reserved.
 //
 
-#import "MyDocument.h"
+#import "BatteryTesterDocument.h"
 
-@implementation MyDocument
+@implementation BatteryTesterDocument
 
 - (id)init
 {
@@ -30,7 +30,7 @@
 
 - (NSString *)windowNibName
 {
-    return @"MyDocument";
+    return @"BatteryTesterDocument";
 }
 
 - (void)windowControllerDidLoadNib:(NSWindowController *) aController
