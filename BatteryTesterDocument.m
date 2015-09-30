@@ -21,7 +21,8 @@
     loopStep = -1;
 	loopRepeats = -1;
 	loopDoneJumpToStep = -1;
-    running = 0;
+    
+    running = NO;
 
     return self;
 }
@@ -84,9 +85,33 @@
 }
 - (void)awakeFromNib
 {
-	NSLog(@"it's too early for me, man...");
+	
+    NSLog(@"it's too early for me, man...");
 }
 /* battery tester methods*/
+
+
+- (BOOL)validateToolbarItem:(NSToolbarItem *)toolbarItem;
+{
+    if ([toolbarItem action] == @selector(start:)) {
+        return !running && sequence && ([sequence numberOfSteps] > 1);
+    }
+    else if ([toolbarItem action] == @selector(stop:)) {
+        return running;
+    }
+    else if ([toolbarItem action] == @selector(importSequenceFile:)) {
+        return !running;
+    }    
+    else if ([toolbarItem action] == @selector(exportSequenceFile:)) {
+        return !running && sequence && ([sequence numberOfSteps] > 1);
+    }    
+    else if ([toolbarItem action] == @selector(nextStep:)) {
+        return running;
+    }
+    
+    return YES;
+}
+
 
 - (IBAction)start:(id)sender
 {
@@ -137,7 +162,7 @@
 	
 	[theTable selectRowIndexes:theIndex byExtendingSelection:FALSE];
 	
-	if(loopStep > -1)// if we are running a loop
+	if (loopStep > -1)// if we are running a loop
 		[statusText1 setStringValue:[NSString stringWithFormat:@"%@, Loop back to step %d, iteration %d of %d",statusString, userReadableLoopStep,totalLoopRepeats - loopRepeats + 1,totalLoopRepeats]];
 	else
 		[statusText1 setStringValue:statusString];
@@ -344,7 +369,7 @@
         logFile = 0;
     }
 	[statusText1 setStringValue:@"Run Stopped"];
-    running = 0;
+    running = NO;
     
     //NSLog(@"stop, goddamn it");
 }
@@ -439,7 +464,7 @@
 	else
 		[statusText2 setStringValue:[NSString stringWithFormat:@"hmm, rcvd %ld, %@",(unsigned long)[receiver length], receiver]];
 	
-	if(running)
+	if (running)
 	{
 		[self doPresentStep];
 		++presentSaveIterations;
@@ -520,7 +545,7 @@
 -(void)writeToFile:(NSString*)writeString
 {
     NSString *string;
-    unsigned long long offset;                                  // a variable to hold the file read/write position
+    unsigned long long offset; // a variable to hold the file read/write position
     NSData *data;
     
 	
@@ -581,7 +606,8 @@
                     
                     runTime = [[NSDate date] retain];
                     stepRunTime = [[NSDate date] retain];
-                    running = 1;
+                    
+                    running = YES;
                     [statusText1 setStringValue:@"Run Started"];
                     
                     currentStep = 0;
@@ -732,11 +758,11 @@
 - (IBAction)closeNewSerialSheet:(id)sender
 {
 	//if(sender != self)
-		[NSApp endSheet:newSerialSheet returnCode:NSOKButton];
+    [NSApp endSheet:newSerialSheet returnCode:NSOKButton];
 }
 - (IBAction)cancelNewSerialSheet:(id)sender
 {
-		[NSApp endSheet:newSerialSheet returnCode:NSCancelButton];
+    [NSApp endSheet:newSerialSheet returnCode:NSCancelButton];
 }
 
 - (void)showNewSerialSheet
@@ -827,7 +853,7 @@
 		++portList;
 	}
 
-	if([newSerialMenu numberOfItems])	// we found some ports
+	if ([newSerialMenu numberOfItems])	// we found some ports
 	{
 		[serialPortErrorDescription setHidden:true];
 

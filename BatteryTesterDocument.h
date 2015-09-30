@@ -18,12 +18,13 @@
 	IBOutlet NSWindow *introSheet,*newSerialSheet, *serialNumberSheet, *timeSheet;
 	IBOutlet Graph *graph;
 	IBOutlet NSPopUpButton *newSerialMenu;
+    
 	IBOutlet NSButton *startButton, *loadButton, *okButton, *cancelButton;
 	IBOutlet NSTextField *serialPortMenuLabel;
 	IBOutlet NSTextField *serialPortErrorDescription;
 	
 	//battery tester
-    NSTimer *theTimer;
+    NSTimer* theTimer;
     
     IBOutlet BatteryTesterSequence <NSTableViewDataSource> *sequence;
 	
@@ -37,7 +38,9 @@
 	float ampsSetpoint, voltsSetpoint, amps, volts, presentInterval;
 	int lessEqualGreater;
 	int loopStep, loopRepeats,totalLoopRepeats, currentLoop, loopDoneJumpToStep, userReadableLoopStep;
-    int running, saveIterator, presentSaveIterations;
+    int saveIterator, presentSaveIterations;
+    
+    BOOL    running;
 
 	int		selectedCommand;
 	
@@ -69,11 +72,12 @@
 - (void)parseCurrentStep;
 
 - (void)updateThings;
+
 - (void)writeLatestDataToDisk;
 - (void)writeToFile:(NSString*)writeString;
 
 - (IBAction)nameAndStartSaveLogFile:(id)sender;
--(NSString *)readSmallTesterBinary;
+- (NSString *)readSmallTesterBinary;
 
 # pragma mark commands
 
