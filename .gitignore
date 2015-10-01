@@ -1,6 +1,6 @@
 # Xcode
 .DS_Store
-build/
+build/*
 *.pbxuser
 !default.pbxuser
 *.mode1v3
@@ -11,4 +11,6 @@ build/
 !default.perspectivev3
 *.xcworkspace
 !default.xcworkspace
-xcuserdata
+xcuserdata/
+UserInterfaceState.xcuserstate
+

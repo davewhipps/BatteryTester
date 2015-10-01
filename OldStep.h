@@ -33,6 +33,8 @@
 /*
 -(OldStep *)initWithStepID:(int)theID cmd:(NSString *)theCmd arg:(NSString *)theArg set:(float)theSetpoint time:(int)theDuration endType:(NSString *)theEnd crit:(NSString *)theCriterion target:(float)theTargetAmt readEvery:(int)readInt logEvery:(int)theLog flag:(NSString *)theFlag;
  */
+
 -(OldStep *)initWithArray:(NSArray *)theArray;
+-(NSString *)toCSVString;
 
 @end

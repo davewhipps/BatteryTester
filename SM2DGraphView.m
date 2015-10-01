@@ -5,7 +5,7 @@
 //    SM2DGraphView Copyright 2002-2005 Snowmint Creative Solutions LLC.
 //    http://www.snowmintcs.com/
 //
-#import <vecLib/vecLib.h>
+
 #import "SM2DGraphView.h"
 #import "NSImage_SMExtensions.h"
 
