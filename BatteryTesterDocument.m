@@ -12,17 +12,18 @@
 
 - (id)init
 {
-	[super init];
-    
-    sequence = [[BatteryTesterSequence alloc] init];
+	self = [super init];
+    if (self) {
+        sequence = [[BatteryTesterSequence alloc] init];
 
-	//tester = [[SingleCellHardware alloc] init];
-	//[tester setThingsUp];
-    loopStep = -1;
-	loopRepeats = -1;
-	loopDoneJumpToStep = -1;
-    
-    running = NO;
+        //tester = [[SingleCellHardware alloc] init];
+        //[tester setThingsUp];
+        loopStep = -1;
+        loopRepeats = -1;
+        loopDoneJumpToStep = -1;
+        
+        running = NO;
+    }
 
     return self;
 }
@@ -627,7 +628,7 @@
 	unsigned char binReceive[5];
     unsigned char theReceive[100];
     int success, receiveLength = 1;
-    NSString *stringy;
+    NSString *stringy = nil;
     
 	success = 0;
 	//NSLog(@"start read");
@@ -642,8 +643,8 @@
 	}
 //	printf("\n");
 	
-		if(success)
-			NSLog(@"Cleanout before read gave %d bytes",success);
+    if(success)
+        NSLog(@"Cleanout before read gave %d bytes",success);
     receiveLength =	[csp readAndWrite:2 :5 :binSend :binReceive :testerPort];
 
 	
@@ -669,15 +670,13 @@
 
 - (NSString *)sendCommandToSmallTester:(unsigned char*)theSent length:(int)lengths
 {
-    NSString *incomeString;
     unsigned char theReceive[100];
-    int receiveLength;
     
 	[csp writePort:lengths :theSent :testerPort];
-	receiveLength = [csp readAndWrite:lengths :4 :theSent :theReceive :testerPort];
+	int receiveLength = [csp readAndWrite:lengths :4 :theSent :theReceive :testerPort];
 
     theReceive[receiveLength] = 0;
-    incomeString = [NSString stringWithCString:theReceive encoding:NSASCIIStringEncoding];
+    NSString* incomeString = [NSString stringWithCString:theReceive encoding:NSASCIIStringEncoding];
 
     return incomeString;
 }
@@ -787,7 +786,7 @@
 	NSString *popupString = [[newSerialMenu selectedItem] title];
 	int index = 0;
     portList = GetPorts();
-	NSString *portName;
+	NSString *portName = @"";
 	
 	NSWindow *theWin = 0;
 	NSArray *theArray = 0;
@@ -823,7 +822,7 @@
 			testerPort =  err;
 			[theWin setTitle:portName];
 			theTimer = [[NSTimer scheduledTimerWithTimeInterval:UPDATEINTERVAL target:self selector:@selector(updateThings) userInfo:nil repeats:TRUE] retain];
-}
+        }
 		[sheet orderOut:self];
 		[self closeNewSerialSheet:self];
 	}

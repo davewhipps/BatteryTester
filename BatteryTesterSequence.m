@@ -14,10 +14,13 @@
 
 - (id)init
 {
-    NSString *realString = @"StepID,Cmd,Arg,SP,Duration,EndType,Criterion,TargetVal,DaqIntrv,LogIntrv,Flag";
-	NSArray *theArray = [realString componentsSeparatedByString:@","];
-	steps = [[NSMutableArray arrayWithObjects:[[OldStep alloc] initWithArray:theArray], nil] retain];
-
+    self = [super init];
+    if (self) {
+        NSString *realString = @"StepID,Cmd,Arg,SP,Duration,EndType,Criterion,TargetVal,DaqIntrv,LogIntrv,Flag";
+        NSArray *theArray = [realString componentsSeparatedByString:@","];
+        steps = [NSMutableArray arrayWithObjects:[[OldStep alloc] initWithArray:theArray], nil];
+    }
+    
     return self;
 }
 
@@ -59,8 +62,9 @@
     OldStep *stepWise;
     //NSString *lineString = [NSString stringWithString: [lineArray objectAtIndex:2]];
     
-    NSArray *theArray;
-    NSMutableArray *newArray, *oldArray;
+    NSArray* theArray = nil;
+    NSMutableArray* newArray = nil;
+    NSMutableArray* oldArray = nil;
     
     //NSLog(@"lineString = %@",lineString);
     
@@ -73,7 +77,7 @@
     for (i = 2; i < foo; ++i)
     {
         theArray = [[lineArray objectAtIndex:i]  componentsSeparatedByString:@","];
-        if([theArray count] == 11)
+        if ([theArray count] == 11)
         {
             stepWise = [[OldStep alloc] initWithArray:theArray];
             
@@ -91,7 +95,7 @@
         //else 
         //	NSLog(@"oops on line %d, %d objects",i, [theArray count]);
     }
-    /* */
+
     oldArray = steps;
     steps = newArray;
     [newArray retain];

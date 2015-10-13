@@ -1146,7 +1146,7 @@
 																<string key="NSFrame">{{1, 477}, {841, 15}}</string>
 																<reference key="NSSuperview" ref="1006489406"/>
 																<reference key="NSWindow"/>
-																<reference key="NSNextKeyView" ref="668520471"/>
+																<reference key="NSNextKeyView"/>
 																<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 																<string key="NSControlAction">_doScroller:</string>
 																<reference key="NSControlTarget" ref="1006489406"/>
@@ -1339,7 +1339,7 @@
 				<nil key="NSUserInterfaceItemIdentifier"/>
 				<string key="NSWindowContentMinSize">{213, 107}</string>
 				<object class="NSView" key="NSWindowView" id="704445163">
-					<nil key="NSNextResponder"/>
+					<reference key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
 					<array class="NSMutableArray" key="NSSubviews">
 						<object class="NSTextField" id="851717558">
@@ -1347,6 +1347,7 @@
 							<int key="NSvFlags">-2147483374</int>
 							<string key="NSFrame">{{18, 49}, {348, 39}}</string>
 							<reference key="NSSuperview" ref="704445163"/>
+							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="967938830"/>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSTextFieldCell" key="NSCell" id="776671503">
@@ -1366,6 +1367,7 @@
 							<int key="NSvFlags">-2147483381</int>
 							<string key="NSFrame">{{163, 64}, {198, 26}}</string>
 							<reference key="NSSuperview" ref="704445163"/>
+							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="813814717"/>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSPopUpButtonCell" key="NSCell" id="624599677">
@@ -1419,6 +1421,8 @@
 							<int key="NSvFlags">-2147483359</int>
 							<string key="NSFrame">{{288, 13}, {82, 32}}</string>
 							<reference key="NSSuperview" ref="704445163"/>
+							<reference key="NSWindow"/>
+							<reference key="NSNextKeyView"/>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSButtonCell" key="NSCell" id="736991448">
 								<int key="NSCellFlags">67108864</int>
@@ -1441,6 +1445,7 @@
 							<int key="NSvFlags">289</int>
 							<string key="NSFrame">{{206, 13}, {82, 32}}</string>
 							<reference key="NSSuperview" ref="704445163"/>
+							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="672631200"/>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSButtonCell" key="NSCell" id="772418435">
@@ -1466,6 +1471,7 @@
 							<int key="NSvFlags">268</int>
 							<string key="NSFrame">{{18, 57}, {141, 31}}</string>
 							<reference key="NSSuperview" ref="704445163"/>
+							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="6065473"/>
 							<string key="NSReuseIdentifierKey">_NS:526</string>
 							<string key="NSHuggingPriority">{251, 750}</string>
@@ -1494,6 +1500,8 @@
 						</object>
 					</array>
 					<string key="NSFrameSize">{384, 108}</string>
+					<reference key="NSSuperview"/>
+					<reference key="NSWindow"/>
 					<reference key="NSNextKeyView" ref="851717558"/>
 				</object>
 				<string key="NSScreenRect">{{0, 0}, {1680, 1027}}</string>
@@ -2499,7 +2507,7 @@
 				<string key="100101.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<boolean value="YES" key="100102.IBNSWindowAutoPositionCentersHorizontal"/>
 				<boolean value="YES" key="100102.IBNSWindowAutoPositionCentersVertical"/>
-				<string key="100102.IBPersistedLastKnownCanvasPosition">{-1057, -143}</string>
+				<string key="100102.IBPersistedLastKnownCanvasPosition">{-1814, -637}</string>
 				<string key="100102.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="100102.IBWindowTemplateEditedContentRect">{{0, 644}, {305, 201}}</string>
 				<reference key="100103.IBNSViewMetadataGestureRecognizers" ref="0"/>
@@ -2549,7 +2557,7 @@
 				<string key="100190.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<boolean value="YES" key="5.IBNSWindowAutoPositionCentersHorizontal"/>
 				<boolean value="YES" key="5.IBNSWindowAutoPositionCentersVertical"/>
-				<string key="5.IBPersistedLastKnownCanvasPosition">{-1063, -457.5}</string>
+				<string key="5.IBPersistedLastKnownCanvasPosition">{-1613, -995.5}</string>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="5.IBWindowTemplateEditedContentRect">{{11, 428}, {786, 425}}</string>
 				<reference key="6.IBNSViewMetadataGestureRecognizers" ref="0"/>
