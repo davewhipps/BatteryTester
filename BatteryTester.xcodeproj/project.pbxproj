@@ -209,7 +209,7 @@
 		2A37F4A9FDCFA73011CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0620;
+				LastUpgradeCheck = 0710;
 			};
 			buildConfigurationList = C05733CB08A9546B00998B17 /* Build configuration list for PBXProject "BatteryTester" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -316,6 +316,7 @@
 				INFOPLIST_FILE = "BatteryTester-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.coulombic.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = BatteryTester;
 			};
 			name = Debug;
@@ -332,6 +333,7 @@
 				INFOPLIST_FILE = "BatteryTester-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.coulombic.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = BatteryTester;
 			};
 			name = Release;
@@ -339,6 +341,7 @@
 		C05733CC08A9546B00998B17 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;

@@ -22,11 +22,19 @@ NSString* CommentMarker = @"#";
     if (self) {
         NSString *realString = @"StepID,Cmd,Arg,SP,Duration,EndType,Criterion,TargetVal,DaqIntrv,LogIntrv,Flag";
         NSArray *theArray = [realString componentsSeparatedByString:@","];
-        steps = [NSMutableArray arrayWithObjects:[[OldStep alloc] initWithArray:theArray], nil];
+        // We need this array around for the duration. Retain.
+        steps = [[NSMutableArray arrayWithObjects:[[OldStep alloc] initWithArray:theArray], nil] retain];
     }
     
     return self;
 }
+
+- (void)dealloc
+{
+  [steps release], steps = nil;
+  [super dealloc];
+}
+
 
 -(NSString*) stringForAttribute:(NSString*)selectorString atIndex:(NSInteger)index {
     NSString* resultString = nil;
@@ -108,8 +116,11 @@ NSString* CommentMarker = @"#";
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
-	NSString *isHeader = [[aTableColumn headerCell] stringValue];
+	NSString* isHeader = [[aTableColumn headerCell] stringValue];
 	
+    if ([steps objectAtIndex:rowIndex] == nil)
+        return nil;
+    
 	if([isHeader isEqualToString:@"Step"])
 		return [[steps objectAtIndex:rowIndex] stepID];
 	

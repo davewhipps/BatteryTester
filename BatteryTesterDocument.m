@@ -523,7 +523,7 @@
                 NSURL* theSequenceFile = [[openPanel URLs] objectAtIndex:0];
                 [sequence initWithContentsOfURL:theSequenceFile];
                 [theTable reloadData];
-                [theTable selectRowIndexes:0 byExtendingSelection:FALSE];
+                [theTable deselectAll:self];
                 
                 loopStep = -1;
                 loopRepeats = -1;
