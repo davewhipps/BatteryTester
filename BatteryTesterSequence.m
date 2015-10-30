@@ -10,7 +10,11 @@
 
 @implementation BatteryTesterSequence
 
-@synthesize numberOfSteps;
+// Constants
+NSString* HeaderRow = @"StepID	cmd	arg	SP	time	endtyp	endamt	target log	comments,,,,,,,,,";
+NSString* HeaderMarker = @"StepID	cmd	arg	SP	time	endtyp	endamt	target log	comments";
+NSString* CommentRow = @"##Your comments here,,,,,,,,,";
+NSString* CommentMarker = @"#";
 
 - (id)init
 {
@@ -40,6 +44,10 @@
 {
     NSMutableArray* stepsStringArray = [NSMutableArray arrayWithCapacity:[steps count]];
     
+    // Add the comments and header rows
+    [stepsStringArray addObject:CommentRow];
+    [stepsStringArray addObject:HeaderRow];
+    
     [steps enumerateObjectsUsingBlock:^(id object, NSUInteger idx, BOOL *stop) {
         [stepsStringArray addObject:[(OldStep*)object toCSVString]];
     }];
@@ -53,55 +61,43 @@
 
 - (void)initWithContentsOfURL:(NSURL*)inURL;
 {
-    int i, foo, isInit = 0;
-
     NSError* whatError = nil;
-    NSString *theString = [[NSString stringWithContentsOfURL:inURL encoding:NSUTF8StringEncoding error:&whatError] stringByReplacingOccurrencesOfString:@"," withString:@", "];
+    NSString* theString = [[NSString stringWithContentsOfURL:inURL encoding:NSUTF8StringEncoding error:&whatError] stringByReplacingOccurrencesOfString:@"," withString:@", "];
     
-    NSArray *lineArray = [theString componentsSeparatedByString:@"\r\n"];
-    OldStep *stepWise;
-    //NSString *lineString = [NSString stringWithString: [lineArray objectAtIndex:2]];
+    NSArray* lineArray = [theString componentsSeparatedByString:@"\r\n"];
+    NSMutableArray* newArray = [NSMutableArray array];
     
-    NSArray* theArray = nil;
-    NSMutableArray* newArray = nil;
-    NSMutableArray* oldArray = nil;
+    [steps removeAllObjects];
     
-    //NSLog(@"lineString = %@",lineString);
-    
-    //NSLog(@"%d objects in LineArray",[lineArray count]);
-    
-    foo = [lineArray count];
-    
-    numberOfSteps = foo - 3;
-    
-    for (i = 2; i < foo; ++i)
+    for (NSString* lineString in lineArray)
     {
-        theArray = [[lineArray objectAtIndex:i]  componentsSeparatedByString:@","];
-        if ([theArray count] == 11)
+        // Check for comment line(s)
+        if ([lineString hasPrefix:CommentMarker])
+            continue;
+        
+        // Check for header line
+        if ([lineString hasPrefix:HeaderMarker])
+            continue;
+        
+        // Otherwise we have a step row (ensure correct number of fields)
+        NSArray* lineComponents = [lineString  componentsSeparatedByString:@","];
+        if ([lineComponents count] == 11)
         {
-            stepWise = [[OldStep alloc] initWithArray:theArray];
-            
-            
-            if(isInit)
-                [newArray addObject:stepWise];
-            else
-            {
-                newArray = [NSMutableArray arrayWithObject:stepWise];
-                isInit = 1;
-            }
-            
-            //NSLog(@"oops on line %d",i);
+            OldStep* stepWise = [[OldStep alloc] initWithArray:lineComponents];
+            [newArray addObject:stepWise];
         }
-        //else 
-        //	NSLog(@"oops on line %d, %d objects",i, [theArray count]);
     }
-
-    oldArray = steps;
-    steps = newArray;
-    [newArray retain];
-    [oldArray release];
     
+    [steps addObjectsFromArray:newArray];
 }
+
+- (NSInteger) numberOfSteps
+{
+    if (steps)
+        return [steps count];
+    return 0;
+}
+
 
 #pragma mark NSTableViewDataSource
 

@@ -33,7 +33,7 @@
 	IBOutlet NSTextField *commandField, *responseField;
 	NSString *serialPortString;
     	
-	NSInteger currentStep, numberOfSteps;
+	NSInteger currentStep;
 	NSDate *runTime, *stepRunTime;
 	float ampsSetpoint, voltsSetpoint, amps, volts, presentInterval;
 	int lessEqualGreater;

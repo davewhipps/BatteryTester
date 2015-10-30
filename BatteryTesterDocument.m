@@ -236,10 +236,9 @@
     
     [self writeLatestDataToDisk];
     
-	if([commandString isEqualToString:@"rest"])	// open circuit- Turns off any driving current or potential.
+	if ([commandString isEqualToString:@"rest"])	// open circuit- Turns off any driving current or potential.
 	{
-         unsigned char openSend[] = {'o','\r'};
-		NSString *incomeString;
+        unsigned char openSend[] = {'o','\r'};
 		//NSLog(@"start open");
 		
 		receiveLength = [csp readAndWrite:2 :5 :openSend :theReceive :testerPort];
@@ -247,11 +246,11 @@
         ampsSetpoint = 0;
 		[statusText2 setStringValue:@"open circuit"];
 
-        if(receiveLength)
-         {
+        if (receiveLength)
+        {
              theReceive[receiveLength] = 0;
-             incomeString = [NSString stringWithCString:theReceive encoding:NSASCIIStringEncoding];
-         }
+             // NSString * incomeString = [NSString stringWithCString:theReceive encoding:NSASCIIStringEncoding];
+        }
 		//NSLog(@"end open");
 
     }
@@ -269,7 +268,7 @@
      */
 	else if([commandString isEqualToString:@"charge"])  // turn PAR to galvanostat mode
 	{
-        NSString *commandString;
+        NSString* commandString = nil;
 		//NSLog(@"start charge");
 
         maybeAmps = [setpointString doubleValue];
@@ -302,14 +301,14 @@
 		//NSLog(@"end discharge");
 
 	}
-	if([commandString isEqualToString:@"loop"])	
+	if ([commandString isEqualToString:@"loop"])
 	{
 		NSArray *parts = [argumentString componentsSeparatedByString:@";"];
 		NSCharacterSet *setty = [NSCharacterSet characterSetWithCharactersInString:@"<>"];
 		
 		int foo;
 		
-		if(loopStep > -1)//handle loop
+		if (loopStep > -1)//handle loop
 		{
 			--loopRepeats;
 			if(loopRepeats > 0)
@@ -378,8 +377,8 @@
 - (void)updateThings
 {
     NSArray *valuesArray;
-    NSString *receiver = [self readSmallTesterBinary];
-	NSString *voltsString, *ampsString;
+    NSString* receiver = [self readSmallTesterBinary];
+	NSString* voltsString, *ampsString;
     float latestAmps, latestVolts;
 	int success = 0;
 	
