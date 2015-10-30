@@ -118,7 +118,7 @@ NSString* CommentMarker = @"#";
 {
 	NSString* isHeader = [[aTableColumn headerCell] stringValue];
 	
-    if ([steps objectAtIndex:rowIndex] == nil)
+    if (!steps || [steps objectAtIndex:rowIndex] == nil)
         return nil;
     
 	if([isHeader isEqualToString:@"Step"])
