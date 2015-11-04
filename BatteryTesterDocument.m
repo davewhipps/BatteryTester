@@ -12,17 +12,18 @@
 
 - (id)init
 {
-	[super init];
-    
-    sequence = [[BatteryTesterSequence alloc] init];
+	self = [super init];
+    if (self) {
+        sequence = [[BatteryTesterSequence alloc] init];
 
-	//tester = [[SingleCellHardware alloc] init];
-	//[tester setThingsUp];
-    loopStep = -1;
-	loopRepeats = -1;
-	loopDoneJumpToStep = -1;
-    
-    running = NO;
+        //tester = [[SingleCellHardware alloc] init];
+        //[tester setThingsUp];
+        loopStep = -1;
+        loopRepeats = -1;
+        loopDoneJumpToStep = -1;
+        
+        running = NO;
+    }
 
     return self;
 }
@@ -113,6 +114,14 @@
 }
 
 
+- (void)stopWithErrorForAttribute:(NSString*)attributeString atStep:(NSInteger) stepNumber
+{
+    [self stop:self];
+    NSString* errorString = [NSString stringWithFormat:@"There was a problem parsing %@ at step %ld. Stopping.", attributeString, (long)stepNumber];
+    [statusText1 setStringValue:errorString];
+}
+
+
 - (IBAction)start:(id)sender
 {
 	[self nameAndStartSaveLogFile:self];
@@ -140,7 +149,7 @@
 
 - (void)doNextStep
 {
-	if (currentStep > [sequence numberOfSteps])
+	if (currentStep >= [sequence numberOfSteps])
         [self stop:self];
 	else
 		[self parseCurrentStep];
@@ -151,14 +160,21 @@
 	double stepElapsedTime = -[stepRunTime timeIntervalSinceNow];
 
     NSString* stepDuration = [sequence stringForAttribute:@"stepDuration" atIndex:currentStep];
+    if (stepDuration == nil) {
+        return [self stopWithErrorForAttribute:@"stepDuration" atStep:currentStep];
+    }
+    
 	double stepTime = [stepDuration doubleValue];
 	
-    NSString *endTypeString = [sequence stringForAttribute:@"endType" atIndex:currentStep];
+    NSString* endTypeString = [sequence stringForAttribute:@"endType" atIndex:currentStep];
+    if (endTypeString == nil) {
+        return [self stopWithErrorForAttribute:@"endType" atStep:currentStep];
+    }
     
     NSString* stepID = [sequence stringForAttribute:@"stepID" atIndex:currentStep];
-    NSString *statusString = [NSString stringWithFormat:@"Executing step %d, %2.1f s of %2.1f", [stepID intValue], stepElapsedTime, stepTime];
+    NSString* statusString = [NSString stringWithFormat:@"Executing step %d, %2.1f s of %2.1f", [stepID intValue], stepElapsedTime, stepTime];
 	
-	NSIndexSet *theIndex = [NSIndexSet indexSetWithIndex:currentStep];
+	NSIndexSet* theIndex = [NSIndexSet indexSetWithIndex:currentStep];
 	
 	[theTable selectRowIndexes:theIndex byExtendingSelection:FALSE];
 	
@@ -172,6 +188,7 @@
 		if (stepElapsedTime > stepTime )
 		{
 			[self incrementStep];
+            return;
 		}
 	}
 	else if ([endTypeString isEqualToString:@"Voltage"])
@@ -180,48 +197,59 @@
         NSString *targetValueString = [sequence stringForAttribute:@"targetValue" atIndex:currentStep];
         
         float target = [targetValueString floatValue];
-		int getOut = 0;
+		BOOL getOut = NO;
 		
 		if([criterionString isEqualToString:@"LTE"])
 		{
 			//volts -=  .01;
 			
-			if(voltage <= target)// && voltage > 0.01) // kludge for poor error checking
-				getOut = 1;
+			if (voltage <= target)// && voltage > 0.01) // kludge for poor error checking
+				getOut = YES;
 		}
 		else if([criterionString isEqualToString:@"GTE"])
 		{
 			//volts += .01;
 			
 			if(voltage >= target)
-				getOut = 1;
+				getOut = YES;
 		}
 		else
-			getOut = 1;
+			getOut = YES;
 		
-		if (getOut)
-		{
+		if (getOut) {
 			[self incrementStep];
-		}
-		
+            return;
+        }
 	}		
-	else if([endTypeString isEqualToString:@"loop"])
+	else if ([endTypeString isEqualToString:@"loop"])
 	{
         [self incrementStep];
-	}		
+        return;
+	}
 	else 
 	{
         [self incrementStep];
-	}		
+        return;
+	}
 }
 
 - (void)parseCurrentStep
 {
-	NSString *commandString = [sequence stringForAttribute:@"command" atIndex:currentStep];
-    NSString *argumentString = [sequence stringForAttribute:@"argument" atIndex:currentStep];
-    
-    NSString *setpointString = [sequence stringForAttribute:@"setpoint" atIndex:currentStep];
-    NSString *logIntervalString = [sequence stringForAttribute:@"logInterval" atIndex:currentStep];
+	NSString* commandString = [sequence stringForAttribute:@"command" atIndex:currentStep];
+    if (commandString == nil)
+        return [self stopWithErrorForAttribute:@"command" atStep:currentStep];
+
+    NSString* argumentString = [sequence stringForAttribute:@"argument" atIndex:currentStep];
+    if (argumentString == nil)
+        return [self stopWithErrorForAttribute:@"argument" atStep:currentStep];
+   
+    NSString* setpointString = [sequence stringForAttribute:@"setpoint" atIndex:currentStep];
+    if (setpointString == nil)
+        return [self stopWithErrorForAttribute:@"setpoint" atStep:currentStep];
+
+    NSString* logIntervalString = [sequence stringForAttribute:@"logInterval" atIndex:currentStep];
+    if (setpointString == nil)
+        return [self stopWithErrorForAttribute:@"logInterval" atStep:currentStep];
     
     double maybeAmps;
 	unsigned char theReceive[100];
@@ -235,10 +263,9 @@
     
     [self writeLatestDataToDisk];
     
-	if([commandString isEqualToString:@"rest"])	// open circuit- Turns off any driving current or potential.
+	if ([commandString isEqualToString:@"rest"])	// open circuit- Turns off any driving current or potential.
 	{
-         unsigned char openSend[] = {'o','\r'};
-		NSString *incomeString;
+        unsigned char openSend[] = {'o','\r'};
 		//NSLog(@"start open");
 		
 		receiveLength = [csp readAndWrite:2 :5 :openSend :theReceive :testerPort];
@@ -246,11 +273,11 @@
         ampsSetpoint = 0;
 		[statusText2 setStringValue:@"open circuit"];
 
-        if(receiveLength)
-         {
+        if (receiveLength)
+        {
              theReceive[receiveLength] = 0;
-             incomeString = [NSString stringWithCString:theReceive encoding:NSASCIIStringEncoding];
-         }
+             // NSString * incomeString = [NSString stringWithCString:theReceive encoding:NSASCIIStringEncoding];
+        }
 		//NSLog(@"end open");
 
     }
@@ -268,7 +295,7 @@
      */
 	else if([commandString isEqualToString:@"charge"])  // turn PAR to galvanostat mode
 	{
-        NSString *commandString;
+        NSString* commandString = nil;
 		//NSLog(@"start charge");
 
         maybeAmps = [setpointString doubleValue];
@@ -301,14 +328,14 @@
 		//NSLog(@"end discharge");
 
 	}
-	if([commandString isEqualToString:@"loop"])	
+	if ([commandString isEqualToString:@"loop"])
 	{
 		NSArray *parts = [argumentString componentsSeparatedByString:@";"];
 		NSCharacterSet *setty = [NSCharacterSet characterSetWithCharactersInString:@"<>"];
 		
 		int foo;
 		
-		if(loopStep > -1)//handle loop
+		if (loopStep > -1)//handle loop
 		{
 			--loopRepeats;
 			if(loopRepeats > 0)
@@ -377,8 +404,8 @@
 - (void)updateThings
 {
     NSArray *valuesArray;
-    NSString *receiver = [self readSmallTesterBinary];
-	NSString *voltsString, *ampsString;
+    NSString* receiver = [self readSmallTesterBinary];
+	NSString* voltsString, *ampsString;
     float latestAmps, latestVolts;
 	int success = 0;
 	
@@ -523,7 +550,7 @@
                 NSURL* theSequenceFile = [[openPanel URLs] objectAtIndex:0];
                 [sequence initWithContentsOfURL:theSequenceFile];
                 [theTable reloadData];
-                [theTable selectRowIndexes:0 byExtendingSelection:FALSE];
+                [theTable deselectAll:self];
                 
                 loopStep = -1;
                 loopRepeats = -1;
@@ -627,7 +654,7 @@
 	unsigned char binReceive[5];
     unsigned char theReceive[100];
     int success, receiveLength = 1;
-    NSString *stringy;
+    NSString *stringy = nil;
     
 	success = 0;
 	//NSLog(@"start read");
@@ -642,8 +669,8 @@
 	}
 //	printf("\n");
 	
-		if(success)
-			NSLog(@"Cleanout before read gave %d bytes",success);
+    if(success)
+        NSLog(@"Cleanout before read gave %d bytes",success);
     receiveLength =	[csp readAndWrite:2 :5 :binSend :binReceive :testerPort];
 
 	
@@ -669,15 +696,13 @@
 
 - (NSString *)sendCommandToSmallTester:(unsigned char*)theSent length:(int)lengths
 {
-    NSString *incomeString;
     unsigned char theReceive[100];
-    int receiveLength;
     
 	[csp writePort:lengths :theSent :testerPort];
-	receiveLength = [csp readAndWrite:lengths :4 :theSent :theReceive :testerPort];
+	int receiveLength = [csp readAndWrite:lengths :4 :theSent :theReceive :testerPort];
 
     theReceive[receiveLength] = 0;
-    incomeString = [NSString stringWithCString:theReceive encoding:NSASCIIStringEncoding];
+    NSString* incomeString = [NSString stringWithCString:theReceive encoding:NSASCIIStringEncoding];
 
     return incomeString;
 }
@@ -787,7 +812,7 @@
 	NSString *popupString = [[newSerialMenu selectedItem] title];
 	int index = 0;
     portList = GetPorts();
-	NSString *portName;
+	NSString *portName = @"";
 	
 	NSWindow *theWin = 0;
 	NSArray *theArray = 0;
@@ -823,7 +848,7 @@
 			testerPort =  err;
 			[theWin setTitle:portName];
 			theTimer = [[NSTimer scheduledTimerWithTimeInterval:UPDATEINTERVAL target:self selector:@selector(updateThings) userInfo:nil repeats:TRUE] retain];
-}
+        }
 		[sheet orderOut:self];
 		[self closeNewSerialSheet:self];
 	}

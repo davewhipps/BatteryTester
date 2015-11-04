@@ -14,10 +14,10 @@
     NSMutableArray* steps;
 }
 
-@property (atomic, readonly) NSInteger numberOfSteps;
-
+- (void) clearAndReleaseAllSteps;
 - (void) initWithContentsOfURL:(NSURL*)inURL;
 - (void) writeToURL:(NSURL*)outURL;
+- (NSInteger) numberOfSteps;
 
 -(NSString*) stringForAttribute:(NSString*) selectorString atIndex:(NSInteger)index;
 

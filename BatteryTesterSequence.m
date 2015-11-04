@@ -8,24 +8,56 @@
 
 #import "BatteryTesterSequence.h"
 
+
 @implementation BatteryTesterSequence
 
-@synthesize numberOfSteps;
+// Constants
+NSString* HeaderRow = @"StepID	cmd	arg	SP	time	endtyp	endamt	target log	comments,,,,,,,,,";
+NSString* HeaderMarker = @"StepID	cmd	arg	SP	time	endtyp	endamt	target log	comments";
+NSString* CommentRow = @"##Your comments here,,,,,,,,,";
+NSString* CommentMarker = @"#";
 
 - (id)init
 {
-    NSString *realString = @"StepID,Cmd,Arg,SP,Duration,EndType,Criterion,TargetVal,DaqIntrv,LogIntrv,Flag";
-	NSArray *theArray = [realString componentsSeparatedByString:@","];
-	steps = [[NSMutableArray arrayWithObjects:[[OldStep alloc] initWithArray:theArray], nil] retain];
-
+    self = [super init];
+    if (self) {
+        NSString *realString = @"StepID,Cmd,Arg,SP,Duration,EndType,Criterion,TargetVal,DaqIntrv,LogIntrv,Flag";
+        NSArray *theArray = [realString componentsSeparatedByString:@","];
+        // We need this array around for the duration. Retain.
+        steps = [[NSMutableArray arrayWithObjects:[[OldStep alloc] initWithArray:theArray], nil] retain];
+    }
+    
     return self;
+}
+
+- (void)dealloc
+{
+    [self clearAndReleaseAllSteps];
+    [steps release],
+    steps = nil;
+    [super dealloc];
+}
+
+- (void) clearAndReleaseAllSteps
+{
+    if (steps) {
+        for (OldStep* aStep in steps) {
+            [aStep release];
+            aStep = nil;
+        }
+        [steps removeAllObjects];
+    }
 }
 
 -(NSString*) stringForAttribute:(NSString*)selectorString atIndex:(NSInteger)index {
     NSString* resultString = nil;
     if (steps) {
         SEL selector = NSSelectorFromString(selectorString);
-        NSObject* step = [steps objectAtIndex:index];
+       
+        NSObject* step = nil;
+        if (index < [steps count])
+            step = [steps objectAtIndex:index];
+        
         if (step && selector && [step respondsToSelector:selector]) {
             resultString = [[step performSelector:selector] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         }
@@ -37,11 +69,15 @@
 {
     NSMutableArray* stepsStringArray = [NSMutableArray arrayWithCapacity:[steps count]];
     
+    // Add the comments and header rows
+    [stepsStringArray addObject:CommentRow];
+    [stepsStringArray addObject:HeaderRow];
+    
     [steps enumerateObjectsUsingBlock:^(id object, NSUInteger idx, BOOL *stop) {
         [stepsStringArray addObject:[(OldStep*)object toCSVString]];
     }];
     
-    NSString* csvString = [stepsStringArray componentsJoinedByString:@"\n"];
+    NSString* csvString = [stepsStringArray componentsJoinedByString:@"\r\n"]; // Use old CR LF for backwards compatibility
     
     NSError* whatError = nil;
     [csvString writeToURL:outURL atomically:YES encoding:NSUTF8StringEncoding error:&whatError];
@@ -50,54 +86,43 @@
 
 - (void)initWithContentsOfURL:(NSURL*)inURL;
 {
-    int i, foo, isInit = 0;
-
     NSError* whatError = nil;
-    NSString *theString = [[NSString stringWithContentsOfURL:inURL encoding:NSUTF8StringEncoding error:&whatError] stringByReplacingOccurrencesOfString:@"," withString:@", "];
+    NSString* theString = [[NSString stringWithContentsOfURL:inURL encoding:NSUTF8StringEncoding error:&whatError] stringByReplacingOccurrencesOfString:@"," withString:@", "];
     
-    NSArray *lineArray = [theString componentsSeparatedByString:@"\r\n"];
-    OldStep *stepWise;
-    //NSString *lineString = [NSString stringWithString: [lineArray objectAtIndex:2]];
+
+    NSArray* lineArray = [theString componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+    NSMutableArray* newArray = [NSMutableArray array];
     
-    NSArray *theArray;
-    NSMutableArray *newArray, *oldArray;
-    
-    //NSLog(@"lineString = %@",lineString);
-    
-    //NSLog(@"%d objects in LineArray",[lineArray count]);
-    
-    foo = [lineArray count];
-    
-    numberOfSteps = foo - 3;
-    
-    for (i = 2; i < foo; ++i)
+    [self clearAndReleaseAllSteps];
+    for (NSString* lineString in lineArray)
     {
-        theArray = [[lineArray objectAtIndex:i]  componentsSeparatedByString:@","];
-        if([theArray count] == 11)
+        // Check for comment line(s)
+        if ([lineString hasPrefix:CommentMarker])
+            continue;
+        
+        // Check for header line
+        if ([lineString hasPrefix:HeaderMarker])
+            continue;
+        
+        // Otherwise we have a step row (ensure correct number of fields)
+        NSArray* lineComponents = [lineString  componentsSeparatedByString:@","];
+        if ([lineComponents count] == 11)
         {
-            stepWise = [[OldStep alloc] initWithArray:theArray];
-            
-            
-            if(isInit)
-                [newArray addObject:stepWise];
-            else
-            {
-                newArray = [NSMutableArray arrayWithObject:stepWise];
-                isInit = 1;
-            }
-            
-            //NSLog(@"oops on line %d",i);
+            OldStep* stepWise = [[OldStep alloc] initWithArray:lineComponents];
+            [newArray addObject:stepWise];
         }
-        //else 
-        //	NSLog(@"oops on line %d, %d objects",i, [theArray count]);
     }
-    /* */
-    oldArray = steps;
-    steps = newArray;
-    [newArray retain];
-    [oldArray release];
     
+    [steps addObjectsFromArray:newArray];
 }
+
+- (NSInteger) numberOfSteps
+{
+    if (steps)
+        return [steps count];
+    return 0;
+}
+
 
 #pragma mark NSTableViewDataSource
 
@@ -108,8 +133,11 @@
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
-	NSString *isHeader = [[aTableColumn headerCell] stringValue];
+	NSString* isHeader = [[aTableColumn headerCell] stringValue];
 	
+    if (!steps || [steps objectAtIndex:rowIndex] == nil)
+        return nil;
+    
 	if([isHeader isEqualToString:@"Step"])
 		return [[steps objectAtIndex:rowIndex] stepID];
 	
@@ -149,6 +177,9 @@
 - (void)tableView:(NSTableView *)aTableView setObjectValue:(id)anObject forTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
 	NSString *isHeader = [[aTableColumn headerCell] stringValue];
+
+    if (!steps || [steps objectAtIndex:rowIndex] == nil)
+        return;
 	
 	if ([isHeader isEqualToString:@"Step"])
         [[steps objectAtIndex:rowIndex] setStepID: anObject];

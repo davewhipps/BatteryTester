@@ -1986,7 +1986,13 @@ static void _sm_local_decodeAxisInfo( NSDictionary *inInfo, SM2DGraphAxisRecord 
                 // Colorize the top peice.
                 tempImage = [ [ NSImage alloc ] initWithSize:fromRect.size ];
                 [ tempImage lockFocus ];
-                [ top compositeToPoint:NSZeroPoint operation:NSCompositeCopy fraction:1.0 ];
+                
+                [top drawAtPoint:NSZeroPoint
+                        fromRect:NSMakeRect(0, 0, fromRect.size.width, fromRect.size.height)
+                        operation:NSCompositeCopy
+                        fraction:1.0];
+                //[ top compositeToPoint:NSZeroPoint operation:NSCompositeCopy fraction:1.0 ];
+
                 NSRectFillListWithColorsUsingOperation( &fromRect, &seeThroughColor, 1, NSCompositeSourceAtop );
                 [ tempImage unlockFocus ];
 
@@ -2024,7 +2030,13 @@ static void _sm_local_decodeAxisInfo( NSDictionary *inInfo, SM2DGraphAxisRecord 
             // Colorize the pattern.
             tempImage = [ [ NSImage alloc ] initWithSize:fromRect.size ];
             [ tempImage lockFocus ];
-            [ pattern compositeToPoint:NSZeroPoint operation:NSCompositeCopy fraction:1.0 ];
+
+            [pattern drawAtPoint:NSZeroPoint
+                    fromRect:NSMakeRect(0, 0, fromRect.size.width, fromRect.size.height)
+                    operation:NSCompositeCopy
+                    fraction:1.0];
+            //[ pattern compositeToPoint:NSZeroPoint operation:NSCompositeCopy fraction:1.0 ];
+            
             NSRectFillListWithColorsUsingOperation( &fromRect, &seeThroughColor, 1, NSCompositeSourceAtop );
             [ tempImage unlockFocus ];
 
@@ -2068,7 +2080,13 @@ static void _sm_local_decodeAxisInfo( NSDictionary *inInfo, SM2DGraphAxisRecord 
                 // Colorize the bottom peice.
                 tempImage = [ [ NSImage alloc ] initWithSize:fromRect.size ];
                 [ tempImage lockFocus ];
-                [ top compositeToPoint:NSZeroPoint operation:NSCompositeCopy fraction:1.0 ];
+                
+                [top drawAtPoint:NSZeroPoint
+                        fromRect:NSMakeRect(0, 0, fromRect.size.width, fromRect.size.height)
+                        operation:NSCompositeCopy
+                    fraction:1.0];
+                //[ top compositeToPoint:NSZeroPoint operation:NSCompositeCopy fraction:1.0 ];
+                
                 NSRectFillListWithColorsUsingOperation( &fromRect, &seeThroughColor, 1, NSCompositeSourceAtop );
                 [ tempImage unlockFocus ];
 
@@ -2116,7 +2134,13 @@ static void _sm_local_decodeAxisInfo( NSDictionary *inInfo, SM2DGraphAxisRecord 
             // Colorize the pattern.
             tempImage = [ [ NSImage alloc ] initWithSize:fromRect.size ];
             [ tempImage lockFocus ];
-            [ pattern compositeToPoint:NSZeroPoint operation:NSCompositeCopy fraction:1.0 ];
+            
+            [pattern drawAtPoint:NSZeroPoint
+                        fromRect:NSMakeRect(0, 0, fromRect.size.width, fromRect.size.height)
+                        operation:NSCompositeCopy
+                        fraction:1.0];
+            //[ pattern compositeToPoint:NSZeroPoint operation:NSCompositeCopy fraction:1.0 ];
+            
             NSRectFillListWithColorsUsingOperation( &fromRect, &seeThroughColor, 1, NSCompositeSourceAtop );
             [ tempImage unlockFocus ];
 
