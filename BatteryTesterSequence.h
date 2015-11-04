@@ -14,6 +14,7 @@
     NSMutableArray* steps;
 }
 
+- (void) clearAndReleaseAllSteps;
 - (void) initWithContentsOfURL:(NSURL*)inURL;
 - (void) writeToURL:(NSURL*)outURL;
 - (NSInteger) numberOfSteps;

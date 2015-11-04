@@ -32,10 +32,22 @@ NSString* CommentMarker = @"#";
 
 - (void)dealloc
 {
-  [steps release], steps = nil;
-  [super dealloc];
+    [self clearAndReleaseAllSteps];
+    [steps release],
+    steps = nil;
+    [super dealloc];
 }
 
+- (void) clearAndReleaseAllSteps
+{
+    if (steps) {
+        for (OldStep* aStep in steps) {
+            [aStep release];
+            aStep = nil;
+        }
+        [steps removeAllObjects];
+    }
+}
 
 -(NSString*) stringForAttribute:(NSString*)selectorString atIndex:(NSInteger)index {
     NSString* resultString = nil;
@@ -65,7 +77,7 @@ NSString* CommentMarker = @"#";
         [stepsStringArray addObject:[(OldStep*)object toCSVString]];
     }];
     
-    NSString* csvString = [stepsStringArray componentsJoinedByString:@"\n"];
+    NSString* csvString = [stepsStringArray componentsJoinedByString:@"\r\n"]; // Use old CR LF for backwards compatibility
     
     NSError* whatError = nil;
     [csvString writeToURL:outURL atomically:YES encoding:NSUTF8StringEncoding error:&whatError];
@@ -77,12 +89,11 @@ NSString* CommentMarker = @"#";
     NSError* whatError = nil;
     NSString* theString = [[NSString stringWithContentsOfURL:inURL encoding:NSUTF8StringEncoding error:&whatError] stringByReplacingOccurrencesOfString:@"," withString:@", "];
     
-    NSArray* lineArray = [theString componentsSeparatedByString:@"\r\n"];
+
+    NSArray* lineArray = [theString componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
     NSMutableArray* newArray = [NSMutableArray array];
     
-    // TODO: This leaks the OldStep objects that existed in the array.
-    [steps removeAllObjects];
-    
+    [self clearAndReleaseAllSteps];
     for (NSString* lineString in lineArray)
     {
         // Check for comment line(s)
