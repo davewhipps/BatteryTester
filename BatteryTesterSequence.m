@@ -8,6 +8,7 @@
 
 #import "BatteryTesterSequence.h"
 
+
 @implementation BatteryTesterSequence
 
 // Constants
@@ -40,7 +41,11 @@ NSString* CommentMarker = @"#";
     NSString* resultString = nil;
     if (steps) {
         SEL selector = NSSelectorFromString(selectorString);
-        NSObject* step = [steps objectAtIndex:index];
+       
+        NSObject* step = nil;
+        if (index < [steps count])
+            step = [steps objectAtIndex:index];
+        
         if (step && selector && [step respondsToSelector:selector]) {
             resultString = [[step performSelector:selector] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         }
@@ -75,6 +80,7 @@ NSString* CommentMarker = @"#";
     NSArray* lineArray = [theString componentsSeparatedByString:@"\r\n"];
     NSMutableArray* newArray = [NSMutableArray array];
     
+    // TODO: This leaks the OldStep objects that existed in the array.
     [steps removeAllObjects];
     
     for (NSString* lineString in lineArray)
@@ -160,6 +166,9 @@ NSString* CommentMarker = @"#";
 - (void)tableView:(NSTableView *)aTableView setObjectValue:(id)anObject forTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
 	NSString *isHeader = [[aTableColumn headerCell] stringValue];
+
+    if (!steps || [steps objectAtIndex:rowIndex] == nil)
+        return;
 	
 	if ([isHeader isEqualToString:@"Step"])
         [[steps objectAtIndex:rowIndex] setStepID: anObject];

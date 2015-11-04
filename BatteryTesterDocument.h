@@ -71,6 +71,8 @@
 - (void)doNextStep;
 - (void)parseCurrentStep;
 
+- (void)stopWithErrorForAttribute:(NSString*)attributeString atStep:(NSInteger) stepNumber;
+
 - (void)updateThings;
 
 - (void)writeLatestDataToDisk;

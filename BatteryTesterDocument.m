@@ -114,6 +114,14 @@
 }
 
 
+- (void)stopWithErrorForAttribute:(NSString*)attributeString atStep:(NSInteger) stepNumber
+{
+    [self stop:self];
+    NSString* errorString = [NSString stringWithFormat:@"There was a problem parsing %@ at step %ld. Stopping.", attributeString, (long)stepNumber];
+    [statusText1 setStringValue:errorString];
+}
+
+
 - (IBAction)start:(id)sender
 {
 	[self nameAndStartSaveLogFile:self];
@@ -141,7 +149,7 @@
 
 - (void)doNextStep
 {
-	if (currentStep > [sequence numberOfSteps])
+	if (currentStep >= [sequence numberOfSteps])
         [self stop:self];
 	else
 		[self parseCurrentStep];
@@ -152,14 +160,21 @@
 	double stepElapsedTime = -[stepRunTime timeIntervalSinceNow];
 
     NSString* stepDuration = [sequence stringForAttribute:@"stepDuration" atIndex:currentStep];
+    if (stepDuration == nil) {
+        return [self stopWithErrorForAttribute:@"stepDuration" atStep:currentStep];
+    }
+    
 	double stepTime = [stepDuration doubleValue];
 	
-    NSString *endTypeString = [sequence stringForAttribute:@"endType" atIndex:currentStep];
+    NSString* endTypeString = [sequence stringForAttribute:@"endType" atIndex:currentStep];
+    if (endTypeString == nil) {
+        return [self stopWithErrorForAttribute:@"endType" atStep:currentStep];
+    }
     
     NSString* stepID = [sequence stringForAttribute:@"stepID" atIndex:currentStep];
-    NSString *statusString = [NSString stringWithFormat:@"Executing step %d, %2.1f s of %2.1f", [stepID intValue], stepElapsedTime, stepTime];
+    NSString* statusString = [NSString stringWithFormat:@"Executing step %d, %2.1f s of %2.1f", [stepID intValue], stepElapsedTime, stepTime];
 	
-	NSIndexSet *theIndex = [NSIndexSet indexSetWithIndex:currentStep];
+	NSIndexSet* theIndex = [NSIndexSet indexSetWithIndex:currentStep];
 	
 	[theTable selectRowIndexes:theIndex byExtendingSelection:FALSE];
 	
@@ -173,6 +188,7 @@
 		if (stepElapsedTime > stepTime )
 		{
 			[self incrementStep];
+            return;
 		}
 	}
 	else if ([endTypeString isEqualToString:@"Voltage"])
@@ -181,48 +197,59 @@
         NSString *targetValueString = [sequence stringForAttribute:@"targetValue" atIndex:currentStep];
         
         float target = [targetValueString floatValue];
-		int getOut = 0;
+		BOOL getOut = NO;
 		
 		if([criterionString isEqualToString:@"LTE"])
 		{
 			//volts -=  .01;
 			
-			if(voltage <= target)// && voltage > 0.01) // kludge for poor error checking
-				getOut = 1;
+			if (voltage <= target)// && voltage > 0.01) // kludge for poor error checking
+				getOut = YES;
 		}
 		else if([criterionString isEqualToString:@"GTE"])
 		{
 			//volts += .01;
 			
 			if(voltage >= target)
-				getOut = 1;
+				getOut = YES;
 		}
 		else
-			getOut = 1;
+			getOut = YES;
 		
-		if (getOut)
-		{
+		if (getOut) {
 			[self incrementStep];
-		}
-		
+            return;
+        }
 	}		
-	else if([endTypeString isEqualToString:@"loop"])
+	else if ([endTypeString isEqualToString:@"loop"])
 	{
         [self incrementStep];
-	}		
+        return;
+	}
 	else 
 	{
         [self incrementStep];
-	}		
+        return;
+	}
 }
 
 - (void)parseCurrentStep
 {
-	NSString *commandString = [sequence stringForAttribute:@"command" atIndex:currentStep];
-    NSString *argumentString = [sequence stringForAttribute:@"argument" atIndex:currentStep];
-    
-    NSString *setpointString = [sequence stringForAttribute:@"setpoint" atIndex:currentStep];
-    NSString *logIntervalString = [sequence stringForAttribute:@"logInterval" atIndex:currentStep];
+	NSString* commandString = [sequence stringForAttribute:@"command" atIndex:currentStep];
+    if (commandString == nil)
+        return [self stopWithErrorForAttribute:@"command" atStep:currentStep];
+
+    NSString* argumentString = [sequence stringForAttribute:@"argument" atIndex:currentStep];
+    if (argumentString == nil)
+        return [self stopWithErrorForAttribute:@"argument" atStep:currentStep];
+   
+    NSString* setpointString = [sequence stringForAttribute:@"setpoint" atIndex:currentStep];
+    if (setpointString == nil)
+        return [self stopWithErrorForAttribute:@"setpoint" atStep:currentStep];
+
+    NSString* logIntervalString = [sequence stringForAttribute:@"logInterval" atIndex:currentStep];
+    if (setpointString == nil)
+        return [self stopWithErrorForAttribute:@"logInterval" atStep:currentStep];
     
     double maybeAmps;
 	unsigned char theReceive[100];
