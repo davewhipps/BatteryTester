@@ -164,18 +164,31 @@
         return [self stopWithErrorForAttribute:@"stepDuration" atStep:currentStep];
     }
     
-	double stepTime = [stepDuration doubleValue];
-	
     NSString* endTypeString = [sequence stringForAttribute:@"endType" atIndex:currentStep];
     if (endTypeString == nil) {
         return [self stopWithErrorForAttribute:@"endType" atStep:currentStep];
     }
+
+    NSString* criterionString = [sequence stringForAttribute:@"criterion" atIndex:currentStep];
+    if (criterionString == nil) {
+        return [self stopWithErrorForAttribute:@"criterion" atStep:currentStep];
+    }
+
+    NSString* targetValueString = [sequence stringForAttribute:@"targetValue" atIndex:currentStep];
+    if (targetValueString == nil) {
+        return [self stopWithErrorForAttribute:@"targetValue" atStep:currentStep];
+    }
+    float targetVoltage = [targetValueString floatValue];
     
     NSString* stepID = [sequence stringForAttribute:@"stepID" atIndex:currentStep];
+    if (stepID == nil) {
+        return [self stopWithErrorForAttribute:@"stepID" atStep:currentStep];
+    }
+    
+	double stepTime = [stepDuration doubleValue];
     NSString* statusString = [NSString stringWithFormat:@"Executing step %d, %2.1f s of %2.1f", [stepID intValue], stepElapsedTime, stepTime];
 	
 	NSIndexSet* theIndex = [NSIndexSet indexSetWithIndex:currentStep];
-	
 	[theTable selectRowIndexes:theIndex byExtendingSelection:FALSE];
 	
 	if (loopStep > -1)// if we are running a loop
@@ -183,54 +196,66 @@
 	else
 		[statusText1 setStringValue:statusString];
 	
+    BOOL incrementStep = NO;
 	if ([endTypeString isEqualToString:@"Time"])	//time ended step
 	{
-		if (stepElapsedTime > stepTime )
-		{
-			[self incrementStep];
-            return;
-		}
+		if (stepElapsedTime > stepTime)
+            incrementStep = YES;
 	}
 	else if ([endTypeString isEqualToString:@"Voltage"])
 	{
-		NSString *criterionString = [sequence stringForAttribute:@"criterion" atIndex:currentStep];
-        NSString *targetValueString = [sequence stringForAttribute:@"targetValue" atIndex:currentStep];
-        
-        float target = [targetValueString floatValue];
-		BOOL getOut = NO;
-		
-		if([criterionString isEqualToString:@"LTE"])
-		{
-			//volts -=  .01;
-			
-			if (voltage <= target)// && voltage > 0.01) // kludge for poor error checking
-				getOut = YES;
+		if ([criterionString isEqualToString:@"LTE"]) {
+			if (voltage <= targetVoltage)
+				incrementStep = YES;
 		}
-		else if([criterionString isEqualToString:@"GTE"])
-		{
-			//volts += .01;
-			
-			if(voltage >= target)
-				getOut = YES;
+		else if ([criterionString isEqualToString:@"GTE"]) {
+			if (voltage >= targetVoltage)
+				incrementStep = YES;
 		}
 		else
-			getOut = YES;
-		
-		if (getOut) {
-			[self incrementStep];
-            return;
+			incrementStep = YES;
+	}
+    else if ([endTypeString isEqualToString:@"TimeOrVoltage"])
+    {
+        if (stepElapsedTime > stepTime ) {
+            incrementStep = YES;
         }
-	}		
+        else if ([criterionString isEqualToString:@"LTE"]) {
+			if (voltage <= targetVoltage)
+				incrementStep = YES;
+		}
+		else if ([criterionString isEqualToString:@"GTE"]) {
+			if (voltage >= targetVoltage)
+				incrementStep = YES;
+		}
+		else
+			incrementStep = YES; // Yikes! I guess we bail
+    }
+    else if ([endTypeString isEqualToString:@"TimeAndVoltage"])
+    {
+        if (stepElapsedTime > stepTime)
+        {
+            if ([criterionString isEqualToString:@"LTE"]) {
+                if (voltage <= targetVoltage)
+                    incrementStep = YES;
+            }
+            else if ([criterionString isEqualToString:@"GTE"]) {
+                if (voltage >= targetVoltage)
+                    incrementStep = YES;
+            }
+            else
+                incrementStep = YES; // Yikes! I guess we bail
+        }
+    }
 	else if ([endTypeString isEqualToString:@"loop"])
-	{
+        incrementStep = YES;
+	else
+        incrementStep = YES;
+    
+    if (incrementStep) {
         [self incrementStep];
         return;
-	}
-	else 
-	{
-        [self incrementStep];
-        return;
-	}
+    }
 }
 
 - (void)parseCurrentStep
@@ -551,6 +576,7 @@
                 [sequence initWithContentsOfURL:theSequenceFile];
                 [theTable reloadData];
                 [theTable deselectAll:self];
+                [theTable selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
                 
                 loopStep = -1;
                 loopRepeats = -1;
