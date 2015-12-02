@@ -175,7 +175,7 @@
 - (double)twoDGraphView:(SM2DGraphView *)inGraphView minimumValueForLineIndex:(unsigned int)inLineIndex
             forAxis:(SM2DGraphAxisEnum)inAxis
 {
-    double	result;
+    double result = 0;
 	double totalPoints = GRAPHDATAMINUTES * 60/UPDATEINTERVAL;//[[NSUserDefaults standardUserDefaults] integerForKey:@"dataGraphMinutes"] * (60/UPDATEINTERVAL);	
 //	[self minValues:fpTempArray];
 	

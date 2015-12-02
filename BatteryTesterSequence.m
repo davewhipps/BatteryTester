@@ -108,8 +108,7 @@ NSString* CommentMarker = @"#";
         NSArray* lineComponents = [lineString  componentsSeparatedByString:@","];
         if ([lineComponents count] == 11)
         {
-            OldStep* stepWise = [[OldStep alloc] initWithArray:lineComponents];
-            [newArray addObject:stepWise];
+            [newArray addObject:[[OldStep alloc] initWithArray:lineComponents]];
         }
     }
     

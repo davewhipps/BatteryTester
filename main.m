@@ -127,12 +127,11 @@ static kern_return_t GetModemPath(io_iterator_t serialPortIterator)
 
 void FindAndListModems(void)
 {
-    kern_return_t	kernResult; // on PowerPC this is an int (4 bytes)
     io_iterator_t	serialPortIterator = 0;
 
-    kernResult = FindModems(&serialPortIterator);
-        
-    kernResult = GetModemPath(serialPortIterator);
+    FindModems(&serialPortIterator);
+    GetModemPath(serialPortIterator);
+    
     IOObjectRelease(serialPortIterator);	// Release the iterator.
 }
 
@@ -243,7 +242,7 @@ int ReadAndWrite(short inLength, short outLength, unsigned char *inBytes, unsign
 }
 
 
-short	PortRead(short count, unsigned char *buffer, int portNumber)
+short PortRead(short count, unsigned char *buffer, int portNumber)
 {
     unsigned char	*bufPtr;	// Current char in buffer
     ssize_t	numBytes = 1;	// Number of bytes read or written

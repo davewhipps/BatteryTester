@@ -18,16 +18,16 @@
 }
 
 @property (copy, readwrite) NSString *stepID;
-@property (copy,readwrite) NSString *command;
-@property (copy,readwrite) NSString *argument;
+@property (copy, readwrite) NSString *command;
+@property (copy, readwrite) NSString *argument;
 @property (copy, readwrite) NSString *setpoint;
 @property (copy, readwrite) NSString *stepDuration;
-@property (copy,readwrite) NSString *endType;
-@property (copy,readwrite) NSString *criterion;
+@property (copy, readwrite) NSString *endType;
+@property (copy, readwrite) NSString *criterion;
 @property (copy, readwrite) NSString *targetValue;
 @property (copy, readwrite) NSString *readInterval;
 @property (copy, readwrite) NSString *logInterval;
-@property (copy,readwrite) NSString *flag;
+@property (copy, readwrite) NSString *flag;
 @property (copy, readwrite) NSString *loopStepID;
 @property (copy, readwrite) NSString *loopRepeatTimes;
 /*
