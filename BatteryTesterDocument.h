@@ -36,23 +36,19 @@
 	NSInteger currentStep;
 	NSDate *runTime, *stepRunTime;
 	float ampsSetpoint, voltsSetpoint, amps, volts, presentInterval;
-	int lessEqualGreater;
-	int loopStep, loopRepeats,totalLoopRepeats, currentLoop, loopDoneJumpToStep, userReadableLoopStep;
+    
+	int loopStep, loopRepeats,totalLoopRepeats, loopDoneJumpToStep, userReadableLoopStep;
     int saveIterator, presentSaveIterations;
     
     BOOL    running;
-
-	int		selectedCommand;
-	
-	int		portAddress;
-	char	portConnected;
-	
-	float	temp1,temp2,current,voltage,watts;
+		
+	float	current,voltage,watts;
 	int		testerPort;
+    
 	SerialPort		*portList;
 	CocoaSerialPort *csp;
 	unsigned char receivePacket[100];
-	NSDate *startTime;
+    
     NSFileHandle *logFile;
 }
 

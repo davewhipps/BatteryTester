@@ -47,14 +47,10 @@
 	serialPortString = @"no port";
 	[serialPortString retain];
 	
-	
-	startTime = 0;
-	
 	// this is a one shot timer, to give time for everyting else to init before showing the sheet
 	[NSTimer scheduledTimerWithTimeInterval:0.4 target:self selector:@selector(showNewSerialSheet) userInfo:nil repeats:NO];
 
 	theTimer = [[NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(refreshAvailablePorts) userInfo:nil repeats:YES] retain];
-	
 }
 
 - (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError
@@ -738,12 +734,11 @@
 
 - (void)drawGraphs
 {
-	NSArray *points = [NSArray arrayWithObjects:
-		[NSNumber numberWithFloat:temp1],	
-		[NSNumber numberWithFloat:temp2],	
-		[NSNumber numberWithFloat:current],	
-		[NSNumber numberWithFloat:voltage],
-		[NSNumber numberWithFloat:watts],		nil];
+	NSArray *points = [NSArray arrayWithObjects:[NSNumber numberWithFloat:0],
+                                                [NSNumber numberWithFloat:0],
+                                                [NSNumber numberWithFloat:current],	
+                                                [NSNumber numberWithFloat:voltage],
+                                                [NSNumber numberWithFloat:watts],		nil];
 	
 	[graph drawPoints: points];
 }
@@ -890,7 +885,6 @@
 	NSString	*portName;
 	int i;	
 
-	portAddress = 0;
     portList = [csp getPortList];
 	[csp findAndListModems];
 	
